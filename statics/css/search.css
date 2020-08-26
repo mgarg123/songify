@@ -1,0 +1,157 @@
+/* Remove prerendered label icon in next.js */
+
+#__next-prerender-indicator {
+    display: none;
+}
+
+.search-container {
+    background: #29282b;
+    /* height: 100vh; */
+    padding-bottom: 64px;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 5px 5px;
+    position: sticky;
+    top: 0;
+    z-index: 9;
+}
+
+#search-box {
+    width: 100%;
+    height: 40px;
+    padding: 5px 43px;
+    outline: none;
+    font-size: 1em;
+    border: 0.5px solid grey;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: lowercase;
+    /* box-shadow: 1px 1px 12px 6px rgba(0, 0, 0, 0.2); */
+    box-shadow: 0 2px 20px 2px rgba(0, 0, 0, .8);
+    border-radius: 10px;
+}
+
+.search-icon {
+    position: absolute;
+    background: #dfdede;
+    width: 33px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
+    height: 38px;
+    top: 6px;
+    left: 6px;
+}
+
+.styles_typicalWrapper__1_Uvh {
+    position: absolute;
+    left: 45px;
+    top: 15px;
+    font-weight: 500;
+    color: rgb(117, 117, 117);
+}
+
+#reset-field {
+    position: absolute;
+    top: 13.8px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.slide-in {
+    animation: slide-in 0.6s ease-in-out;
+}
+
+@keyframes slide-in {
+    0% {
+        transform: translateX(30%);
+    }
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+
+/* Suggestions CSS Starts */
+
+.search-suggestion-container {
+    /* border: 1px solid #fff; */
+    margin: 25px 7px;
+    color: #fff;
+}
+
+.suggestions .sugg-top,
+.trending-search h2 {
+    padding: 10px 2px;
+}
+
+.sugg-top {
+    /* border: 1px solid red; */
+    position: relative;
+}
+
+.sugg-top h2 {
+    /* border: 1px solid white; */
+}
+
+.trending-search {
+    margin: 7px 0px;
+}
+
+.sugg-top span {
+    font-size: 15px;
+    position: absolute;
+    top: 16px;
+    color: rgb(11, 226, 226);
+    right: 8px;
+    cursor: pointer;
+}
+
+.sugg-list {
+    height: 64px;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    position: relative;
+    /* border: 1px solid red; */
+    padding: 5px;
+    /* margin: 6px; */
+}
+
+.sugg-img {}
+
+.sugg-details {
+    padding: 0px 9px;
+}
+
+#sugg-title {
+    position: absolute;
+    top: 6px;
+    letter-spacing: 0.4px;
+    font-size: 0.95em;
+}
+
+#sugg-author {
+    position: absolute;
+    top: 28px;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    font-style: italic;
+    color: #c5c5c5;
+}
+
+.sugg-remove {
+    position: absolute;
+    top: 15px;
+    right: 8px;
+    color: #fff;
+}
+
+.sugg-remove:hover {
+    color: rgb(11, 226, 226)
+}
+
+
+/* Suggestions CSS Ends  */
