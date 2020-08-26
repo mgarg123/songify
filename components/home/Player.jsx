@@ -141,7 +141,9 @@ export class Player extends Component {
                                         scrollamount="6"
                                         loop="2"
                                     ></marquee> :
-                                    <span>{this.props.playSongData.song.substr(0, 28) + "..."}</span>
+                                    <span
+                                        dangerouslySetInnerHTML={{ __html: this.props.playSongData.song.substr(0, 36) }}
+                                    ></span>
                             }
 
                         </div>

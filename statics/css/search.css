@@ -120,6 +120,10 @@
     /* margin: 6px; */
 }
 
+.sugg-list:hover {
+    background: #242325;
+}
+
 .sugg-img {}
 
 .sugg-details {
@@ -150,7 +154,7 @@
 }
 
 .sugg-remove:hover {
-    color: rgb(11, 226, 226)
+    color: rgb(11, 226, 226);
 }
 
 

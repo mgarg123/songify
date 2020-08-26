@@ -6,7 +6,8 @@ import MainHome from './main/MainHome.jsx'
 import MainSearch from './main/MainSearch.jsx'
 import MainLib from './main/MainLib.jsx'
 import MainAccount from './main/MainAccount.jsx'
-import Router from 'next/router'
+// import Router from 'next/router'
+import '../../statics/css/index.css'
 
 
 

@@ -1,19 +1,21 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { RiCloseFill } from 'react-icons/ri'
 import { MdMoreVert } from 'react-icons/md'
 import { IconContext } from "react-icons"
+import Menu from '../../menu/Menu'
 
 export class RecentSearchList extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            playSongData: {}
+            playSongData: {},
+            expandMore: false,
         }
     }
 
 
-    clickHandle = (event) => {
+    clickHandle = () => {
         let history = localStorage.getItem('songify_search_history')
 
         let checkFirst = JSON.parse(history)
@@ -61,6 +63,10 @@ export class RecentSearchList extends Component {
         this.props.removeCallBack(res)
     }
 
+    closeMoreOptionCallBack = (expandMore) => {
+        this.setState({ expandMore: expandMore })
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.state.playSongData !== prevState.playSongData) {
             this.props.playSongCallBack(this.state.playSongData)
@@ -70,60 +76,75 @@ export class RecentSearchList extends Component {
 
     render() {
         return (
-            <div
-                className="sugg-list"
-                id={this.props.songId}
-                onClickCapture={this.clickHandle}
-            >
+            <Fragment>
+                <div
+                    className="sugg-list"
+                    id={this.props.songId}
+                >
 
-                <div className="sugg-img" >
-                    <img src={this.props.imgId}
-                        width={"50px"}
-                        height={"50px"}
-                        alt="Img" />
-                </div>
-                <div className="sugg-details">
-                    <span id="sugg-title"
-                        style={{ color: `${this.props.songId === this.state.playSongData.id ? 'rgb(11, 226, 226)' : '#fff'}` }}
-                        dangerouslySetInnerHTML={{
-                            __html: `${this.props.searchTitle.length > 28 ?
-                                this.props.searchTitle.substr(0, 26) + "..." :
-                                this.props.searchTitle}`
-                        }}
-                    >
-                        {/* {"&amp;"} */}
-                        {/* {this.props.searchTitle.length > 28 ? this.props.searchTitle.substr(0, 26) + "..." : this.props.searchTitle} */}
-                    </span>
-                    {
-                        this.props.isRemovable &&
-                        <IconContext.Provider value={{
-                            size: "1.4em",
-                            className: "sugg-remove"
-                        }}>
-                            <RiCloseFill
-                                onClickCapture={this.removeFromSuggestion}
-                            />
-                        </IconContext.Provider>
-                    }
-                    {
-                        this.props.hasMoreOptions &&
-                        <IconContext.Provider value={{
-                            size: "1.5em",
-                            className: "sugg-remove"
-                        }}>
-                            <MdMoreVert />
-                        </IconContext.Provider>
-                    }
-                    <div id="sugg-author"
-                        dangerouslySetInnerHTML={{
-                            __html: `${this.props.authorName.length > 42 ?
-                                this.props.authorName.substr(0, 42) + "..." :
-                                this.props.authorName}`
-                        }}
-                    ></div>
-                </div>
+                    <div className="sugg-img" onClick={this.clickHandle} >
+                        <img src={this.props.imgId}
+                            width={"50px"}
+                            height={"50px"}
+                            alt="Img" />
+                    </div>
+                    <div className="sugg-details">
+                        <span id="sugg-title"
+                            onClick={this.clickHandle}
+                            style={{ color: `${this.props.songId === this.state.playSongData.id ? 'rgb(11, 226, 226)' : '#fff'}` }}
+                            dangerouslySetInnerHTML={{
+                                __html: `${this.props.searchTitle.length > 28 ?
+                                    this.props.searchTitle.substr(0, 26) + "..." :
+                                    this.props.searchTitle}`
+                            }}
+                        >
+                            {/* {"&amp;"} */}
+                            {/* {this.props.searchTitle.length > 28 ? this.props.searchTitle.substr(0, 26) + "..." : this.props.searchTitle} */}
+                        </span>
+                        {
+                            this.props.isRemovable &&
+                            <IconContext.Provider value={{
+                                size: "1.4em",
+                                className: "sugg-remove"
+                            }}>
+                                <RiCloseFill
+                                    onClickCapture={this.removeFromSuggestion}
+                                />
+                            </IconContext.Provider>
+                        }
+                        {
+                            this.props.hasMoreOptions &&
+                            <IconContext.Provider value={{
+                                size: "1.5em",
+                                className: "sugg-remove"
+                            }}>
+                                <MdMoreVert onClickCapture={() => this.setState({ expandMore: true })} />
 
-            </div>
+                            </IconContext.Provider>
+                        }
+                        <div id="sugg-author"
+                            dangerouslySetInnerHTML={{
+                                __html: `${this.props.authorName.length > 42 ?
+                                    this.props.authorName.substr(0, 42) + "..." :
+                                    this.props.authorName}`
+                            }}
+                        ></div>
+                    </div>
+
+                </div>
+                {
+                    this.state.expandMore &&
+                    <Menu
+                        id={this.props.songId}
+                        type={this.props.type}
+                        artist={this.props.authorName}
+                        title={this.props.searchTitle}
+                        image={this.props.imgId}
+                        clickHandleCallBack={this.clickHandle}
+                        closeMoreOptionCallBack={this.closeMoreOptionCallBack}
+                    />
+                }
+            </Fragment>
         )
     }
 }

@@ -1,0 +1,122 @@
+.menu-root {
+    position: fixed !important;
+    z-index: 9999;
+    bottom: -5px;
+    width: 100%;
+    height: 50%;
+    animation: slide-up-menu 0.5s ease-in-out;
+    left: 0px;
+}
+
+.slide-down {
+    animation: slide-down 0.4s ease-in-out;
+}
+
+@keyframes slide-down {
+    0% {
+        height: 50%;
+    }
+    100% {
+        height: 0%;
+    }
+}
+
+@keyframes slide-up-menu {
+    0% {
+        height: 0px;
+    }
+    100% {
+        height: 50%;
+    }
+}
+
+.menu-container {
+    width: 94%;
+    margin: 0 auto;
+}
+
+.menu-container .main-details {
+    background: #29282b;
+    /* background: #000; */
+    height: 20%;
+    box-shadow: 0px 0px 50px 360px rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    margin: 0 auto;
+}
+
+.menu-img-div {
+    width: 100%;
+    /* height: 10%; */
+    display: flex;
+    /* border: 1px solid red; */
+    position: relative !important;
+    justify-content: center;
+}
+
+.main-details .menu-img-div img {
+    height: 130px;
+    box-shadow: 0px 0px 30px 5px rgba(0, 0, 0, 0.8);
+    width: 130px;
+    transform: translateY(-50%);
+}
+
+.main-details .content-details {
+    display: flex;
+    height: 10%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 13px;
+    padding-bottom: 5px;
+    transform: translateY(-100%);
+}
+
+.content-details .artist-name {
+    color: #757575;
+    font-style: italic;
+}
+
+ul li {
+    width: 90%;
+    margin: 0px auto;
+    list-style: none;
+    height: 44px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+li:nth-child(1) {
+    border-bottom: 0.5px solid grey;
+}
+
+li span {
+    padding: 0px 18px;
+    color: rgb(11, 226, 226);
+}
+
+li:nth-child(2) span {
+    padding: 0px 22px;
+    color: #fff;
+}
+
+.menu-container .close-menu {
+    height: 10%;
+    margin: 15px 0px;
+}
+
+.close-menu button {
+    border: none;
+    outline: none;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.8);
+    color: #fff;
+    background: #29282b;
+    cursor: pointer;
+    /* background: #000; */
+    height: 40px;
+    border-radius: 5px;
+    font-size: 1em;
+    margin: 0 auto;
+}
