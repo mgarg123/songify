@@ -29,6 +29,7 @@ export class Player extends Component {
         }
         this.audioRef = React.createRef()
         this.rangeSlider = React.createRef()
+        this.elapsedTime = React.createRef()
     }
 
 
@@ -54,11 +55,14 @@ export class Player extends Component {
     timeUpdate = (event) => {
         let duration = this.audioRef.current.currentTime + ""
         let elapsedTime = durationToTime(duration)
-
-        this.setState({
-            currentDuration: this.audioRef.current.currentTime,
-            currentElapsedTime: elapsedTime
-        })
+        if (this.rangeSlider.current !== null)
+            this.rangeSlider.current.value = this.audioRef.current.currentTime
+        if (this.elapsedTime.current !== null)
+            this.elapsedTime.current.innerHTML = elapsedTime
+        // this.setState({
+        //     currentDuration: this.audioRef.current.currentTime,
+        //     currentElapsedTime: elapsedTime
+        // })
     }
 
     fullScreenMode = (event) => {
@@ -72,7 +76,10 @@ export class Player extends Component {
 
     seek = (event) => {
         this.audioRef.current.currentTime = event.target.value
-        this.setState({ currentDuration: event.target.value })
+        this.rangeSlider.current.value = event.target.value
+        let elapsedTime = durationToTime(event.target.value)
+        this.elapsedTime.current.innerHTML = elapsedTime
+        // this.setState({ currentDuration: event.target.value })
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -162,7 +169,7 @@ export class Player extends Component {
                             name="slider"
                             id="range-slider"
                             ref={this.rangeSlider}
-                            value={this.state.currentDuration}
+                            // value={this.state.currentDuration}
                             step="any"
                             style={{ display: `${this.state.isFullScreen ? 'block' : 'none'}` }}
                             max={this.props.playSongData.duration}
@@ -195,7 +202,9 @@ export class Player extends Component {
                         {
                             this.state.isFullScreen &&
                             <Fragment>
-                                <span className="song-play-elapsed-time">{this.state.currentElapsedTime}</span>
+                                <span
+                                    ref={this.elapsedTime}
+                                    className="song-play-elapsed-time">00:00</span>
                                 <span className="song-end-time">{this.state.totalDurationInTime}</span>
                             </Fragment>
                         }
