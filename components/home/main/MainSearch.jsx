@@ -3,6 +3,7 @@ import SearchBar from './search/SearchBar'
 import SearchSuggestion from './search/SearchSuggestion'
 import SearchResult from './search/SearchResult'
 import '../../../statics/css/search.css'
+import axios from 'axios'
 
 export class MainSearch extends Component {
     constructor(props) {
@@ -35,11 +36,15 @@ export class MainSearch extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.searchValue !== prevState.searchValue && this.state.searchValue !== "") {
-            fetch("/api/searchv2?q=" + this.state.searchValue)
-                .then(resp => resp.json())
-                .then(resp => {
-                    this.setState({ searchResult: resp, loading: false })
-                }).catch(err => console.log(err.message))
+            axios.get(process.env.searchV2_prefix + "" + this.state.searchValue + "" + process.env.searchV2_suffix).then(resp => {
+                let data = resp.data
+                this.setState({ searchResult: resp, loading: false })
+            }).catch(err => console.log(err.message));
+            // fetch("/api/searchv2?q=" + this.state.searchValue)
+            //     .then(resp => resp.json())
+            //     .then(resp => {
+            //         this.setState({ searchResult: resp, loading: false })
+            //     }).catch(err => console.log(err.message))
         }
 
         if (this.state.playSongData !== prevState.playSongData) {
