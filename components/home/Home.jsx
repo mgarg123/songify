@@ -9,6 +9,8 @@ import MainAccount from './main/MainAccount.jsx'
 import DetailsPage from './DetailsPage'
 // import Router from 'next/router'
 import '../../statics/css/index.css'
+import { Provider } from 'react-redux'
+import store from '../redux/store'
 
 
 
@@ -62,30 +64,34 @@ export class Home extends Component {
     render() {
         return (
             <Fragment>
-                <Header visible={this.state.whichTab === "search" ? false : true} />
-                {
-                    this.state.whichTab === "home" ? <MainHome /> :
-                        this.state.whichTab === 'search' ?
-                            this.state.isAlbumClicked ?
-                                <DetailsPage
-                                    albumClickedCallBack={this.closeAlbumCallBack}
-                                    albumData={this.state.albumData}
-                                /> :
-                                <MainSearch
-                                    playSongCallBack={this.playSongCallBack}
-                                    albumClickedCallBack={this.albumClickedCallBack}
-                                />
+                <Provider store={store}>
+                    <Header visible={this.state.whichTab === "search" ? false : true} />
+                    {
+                        this.state.whichTab === "home" ? <MainHome /> :
+                            this.state.whichTab === 'search' ?
+                                this.state.isAlbumClicked ?
+                                    <DetailsPage
+                                        albumClickedCallBack={this.closeAlbumCallBack}
+                                        playSongCallBack={this.playSongCallBack}
+                                        albumData={this.state.albumData}
+                                    /> :
+                                    <MainSearch
+                                        playSongCallBack={this.playSongCallBack}
+                                        albumClickedCallBack={this.albumClickedCallBack}
+                                    />
 
-                            : this.state.whichTab === "library" ? <MainLib /> :
-                                <MainAccount />
-                }
-                {
-                    Object.keys(this.state.playSongData).length !== 0 && <Player visible={true} playSongData={this.state.playSongData} />
-                }
-                <Footer tabsCallBack={this.tabsCallBack} />
+                                : this.state.whichTab === "library" ? <MainLib /> :
+                                    <MainAccount />
+                    }
+                    {
+                        Object.keys(this.state.playSongData).length !== 0 && <Player visible={true} playSongData={this.state.playSongData} />
+                    }
+                    <Footer tabsCallBack={this.tabsCallBack} />
+                </Provider>
             </Fragment>
         )
     }
 }
+
 
 export default Home

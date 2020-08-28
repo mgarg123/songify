@@ -57,7 +57,10 @@ export class MainSearch extends Component {
                     <SearchBar searchCallBack={this.searchCallBack} loading={this.state.loading} />
                     {
                         this.state.loading || this.state.searchValue.length === 0 ?
-                            <SearchSuggestion playSongCallBack={this.playSongCallBack} /> :
+                            <SearchSuggestion
+                                playSongCallBack={this.playSongCallBack}
+                                albumClickedCallBack={this.albumClickedCallBack}
+                            /> :
                             <SearchResult
                                 playSongCallBack={this.playSongCallBack}
                                 albumClickedCallBack={this.albumClickedCallBack}

@@ -2,23 +2,37 @@ import React, { Component, Fragment } from 'react'
 import { MdMoreVert } from 'react-icons/md'
 import { IconContext } from "react-icons"
 import Menu from './menu/Menu'
+import axios from 'axios'
 
 export class AlbumList extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            expandMore: false
+            expandMore: false,
+            playSongData: {}
         }
     }
 
 
-    clickHandle = () => {
-
+    clickHandle = (event) => {
+        // console.log(this.props.songId);
+        axios.get('/api/songDetailsV2?id=' + this.props.songId).then(res => {
+            let data = res.data[this.props.songId]
+            let mediaURL = data.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
+            data.media_preview_url = mediaURL
+            this.setState({ playSongData: data })
+        }).catch(err => console.log(err.message))
     }
 
     closeMoreOptionCallBack = (expandMore) => {
         this.setState({ expandMore: expandMore })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.playSongData !== prevState.playSongData) {
+            this.props.playSongCallBack(this.state.playSongData)
+        }
     }
 
     render() {
@@ -27,7 +41,7 @@ export class AlbumList extends Component {
                 <div className='album-list-root'>
                     <div className="list-cont">
                         <div className='lc-index'>{this.props.index + "."}</div>
-                        <div className="lc-det">
+                        <div className="lc-det" onClickCapture={this.clickHandle}>
                             <div className='lc-title'>{this.props.title.length > 28 ?
                                 this.props.title.substr(0, 28) + "..." :
                                 this.props.title

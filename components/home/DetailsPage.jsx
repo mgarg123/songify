@@ -10,19 +10,34 @@ export class DetailsPage extends Component {
         super(props)
 
         this.state = {
-            isAlbumClicked: true
+            isAlbumClicked: true,
+            playSongData: {},
         }
+    }
+
+    componentDidMount() {
+        //To scroll to top always when component mounts
+        window.scrollTo(0, 0)
+    }
+
+    playSongCallBack = (data) => {
+        this.setState({ playSongData: data })
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.isAlbumClicked !== prevState.isAlbumClicked)
             this.props.albumClickedCallBack(this.state.isAlbumClicked)
+
+        if (this.state.playSongData !== prevState.playSongData) {
+            this.props.playSongCallBack(this.state.playSongData)
+        }
     }
 
 
     render() {
         return (
-            <div className="details-root">
+            <div className="details-root"
+                style={{ height: `${this.props.albumData.songs.length < 3 ? '100vh' : 'auto'}` }}>
                 <IconContext.Provider value={{
                     size: '2.5em',
                     style: {
@@ -80,7 +95,9 @@ export class DetailsPage extends Component {
                             this.props.albumData.songs.map((data, index) => {
                                 return (
                                     <AlbumList key={data.id}
+                                        songId={data.id}
                                         index={index + 1}
+                                        playSongCallBack={this.playSongCallBack}
                                         title={data.song}
                                         type={data.type}
                                         image={data.image.replace('-150x150.jpg', '-250x250.jpg')}

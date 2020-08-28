@@ -10,7 +10,8 @@ export class SearchSuggestion extends Component {
             seeAll: false,
             suggestions: [],
             showSuggestion: [],
-            playSongData: {}
+            playSongData: {},
+            albumData:{}
         }
     }
 
@@ -50,6 +51,10 @@ export class SearchSuggestion extends Component {
         this.setState({ suggestions: suggestion })
     }
 
+    albumClickedCallBack = (albumData) => {
+        this.setState({albumData:albumData})
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.state.seeAll !== prevState.seeAll) {
             if (this.state.seeAll) {
@@ -68,6 +73,9 @@ export class SearchSuggestion extends Component {
         if (this.state.playSongData !== prevState.playSongData) {
             this.props.playSongCallBack(this.state.playSongData)
         }
+
+        if (this.state.albumData !== prevState.albumData)
+            this.props.albumClickedCallBack(this.state.albumData)
     }
 
     render() {
@@ -90,6 +98,7 @@ export class SearchSuggestion extends Component {
                                 return (
                                     <RecentSearchList
                                         playSongCallBack={this.playSongCallBack}
+                                        albumClickedCallBack = {this.albumClickedCallBack}
                                         key={data.id}
                                         type={data.type}
                                         imgId={data.image.replace("-150x150.jpg", "-350x350.jpg")}

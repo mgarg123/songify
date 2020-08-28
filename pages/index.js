@@ -1,7 +1,5 @@
 import Head from 'next/head'
 import Home from '../components/home/Home.jsx'
-import { Fragment } from 'react'
-
 export default function Index() {
   return (
     <div id="root">

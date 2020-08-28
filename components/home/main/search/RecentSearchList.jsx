@@ -161,4 +161,5 @@ export class RecentSearchList extends Component {
     }
 }
 
+
 export default RecentSearchList
