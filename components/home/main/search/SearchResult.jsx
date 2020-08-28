@@ -7,7 +7,9 @@ export class SearchResult extends Component {
         super(props)
 
         this.state = {
-            playSongData: {}
+            playSongData: {},
+            isAlbumClicked: false,
+            albumData: {}
         }
     }
 
@@ -15,11 +17,20 @@ export class SearchResult extends Component {
         this.setState({ playSongData: data })
     }
 
+    albumClickedCallBack = (albumData) => {
+        this.setState({ albumData: albumData })
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.state.playSongData !== prevState.playSongData) {
             this.props.playSongCallBack(this.state.playSongData)
         }
+
+        if (this.state.albumData !== prevState.albumData)
+            this.props.albumClickedCallBack(this.state.albumData)
     }
+
+
 
     render() {
         return (
@@ -38,6 +49,7 @@ export class SearchResult extends Component {
                                         imgId={data.image}
                                         songId={data.id}
                                         type={data.type}
+                                        albumClickedCallBack={this.albumClickedCallBack}
                                         authorName={data.type === "song" ? data.more_info.singers : data.type}
                                         isRemovable={false}
                                         hasMoreOptions={true}
@@ -63,6 +75,7 @@ export class SearchResult extends Component {
                                         imgId={data.image}
                                         songId={data.id}
                                         type={data.type}
+                                        albumClickedCallBack={this.albumClickedCallBack}
                                         authorName={data.type === "song" ? data.more_info.singers : data.type}
                                         isRemovable={false}
                                         hasMoreOptions={true}
@@ -81,13 +94,14 @@ export class SearchResult extends Component {
 
                     <div className="search-suggestion-list">
                         {
-                            this.props.result.songs.data.map(data => {
+                            this.props.result.albums.data.map(data => {
                                 return (
                                     <RecentSearchList
                                         key={data.id}
                                         imgId={data.image}
                                         songId={data.id}
                                         type={data.type}
+                                        albumClickedCallBack={this.albumClickedCallBack}
                                         authorName={data.type === "song" ? data.more_info.singers :
                                             data.type === "album" ? data.music : data.type}
                                         isRemovable={false}

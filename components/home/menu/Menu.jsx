@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { FaPlay, FaInfoCircle, FaCaretRight } from 'react-icons/fa'
+import { FaPlay, FaInfoCircle } from 'react-icons/fa'
+import { MdQueueMusic } from 'react-icons/md'
 import { IconContext } from 'react-icons'
 import '../../../statics/css/menu.css'
 
@@ -23,19 +24,31 @@ export class Menu extends Component {
     }
 
     render() {
+        let imgUrl = this.props.image
+        let newImgUrl = imgUrl.replace("-50x50.jpg", "-250x250.jpg")
+        console.log(newImgUrl);
         return (
             <div className={`menu-root`} >
                 <div className="menu-container">
                     <div className="main-details">
                         <div className="menu-img-div">
-                            <img src={this.props.image} alt="" />
+                            <img src={newImgUrl} alt="" />
                         </div>
                         <div className="content-details">
                             <div className="content-name"
-                                dangerouslySetInnerHTML={{ __html: this.props.title }}
+                                style={{ textAlign: 'center' }}
+                                dangerouslySetInnerHTML={{
+                                    __html: this.props.title > 28 ?
+                                        this.props.title.substr(0, 28) + "..." :
+                                        this.props.title
+                                }}
                             ></div>
                             <div className="artist-name"
-                                dangerouslySetInnerHTML={{ __html: this.props.artist }}
+                                dangerouslySetInnerHTML={{
+                                    __html: this.props.artist.length > 38 ?
+                                        this.props.artist.substr(0, 38) + "..." :
+                                        this.props.artist
+                                }}
                             ></div>
                         </div>
                         <ul>
@@ -46,16 +59,21 @@ export class Menu extends Component {
                                 }}>
                                     <FaPlay />
                                 </IconContext.Provider>
-                                <span>Play Now</span>
+                                <span>{this.props.optionsArray[0]}</span>
                             </li>
                             <li>
 
                                 <IconContext.Provider value={{
                                     size: '1.2em',
                                 }}>
-                                    <FaInfoCircle />
+                                    {
+                                        this.props.optionsArray[1] === 'Details' ?
+                                            <FaInfoCircle /> :
+                                            <MdQueueMusic />
+                                    }
+
                                 </IconContext.Provider>
-                                <span>Details</span>
+                                <span>{this.props.optionsArray[1]}</span>
                             </li>
                         </ul>
                     </div>

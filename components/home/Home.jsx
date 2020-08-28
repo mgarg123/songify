@@ -6,6 +6,7 @@ import MainHome from './main/MainHome.jsx'
 import MainSearch from './main/MainSearch.jsx'
 import MainLib from './main/MainLib.jsx'
 import MainAccount from './main/MainAccount.jsx'
+import DetailsPage from './DetailsPage'
 // import Router from 'next/router'
 import '../../statics/css/index.css'
 
@@ -17,7 +18,9 @@ export class Home extends Component {
 
         this.state = {
             whichTab: "home",
-            playSongData: {}
+            playSongData: {},
+            isAlbumClicked: false,
+            albumData: {}
         }
     }
 
@@ -29,6 +32,14 @@ export class Home extends Component {
 
     playSongCallBack = (data) => {
         this.setState({ playSongData: data })
+    }
+
+    albumClickedCallBack = (albumData) => {
+        this.setState({ albumData: albumData, isAlbumClicked: true })
+    }
+
+    closeAlbumCallBack = (isAlbumClicked) => {
+        this.setState({ isAlbumClicked: isAlbumClicked })
     }
 
     tabsCallBack = (tab) => {
@@ -43,14 +54,29 @@ export class Home extends Component {
         this.setState({ whichTab: tab })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.albumData !== prevState.albumData)
+            this.setState({ isAlbumClicked: true })
+    }
+
     render() {
         return (
             <Fragment>
                 <Header visible={this.state.whichTab === "search" ? false : true} />
                 {
                     this.state.whichTab === "home" ? <MainHome /> :
-                        this.state.whichTab === 'search' ? <MainSearch playSongCallBack={this.playSongCallBack} /> :
-                            this.state.whichTab === "library" ? <MainLib /> :
+                        this.state.whichTab === 'search' ?
+                            this.state.isAlbumClicked ?
+                                <DetailsPage
+                                    albumClickedCallBack={this.closeAlbumCallBack}
+                                    albumData={this.state.albumData}
+                                /> :
+                                <MainSearch
+                                    playSongCallBack={this.playSongCallBack}
+                                    albumClickedCallBack={this.albumClickedCallBack}
+                                />
+
+                            : this.state.whichTab === "library" ? <MainLib /> :
                                 <MainAccount />
                 }
                 {

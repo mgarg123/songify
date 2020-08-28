@@ -13,7 +13,7 @@ module.exports = withCSS(withImg({
         searchV2_prefix: "https://www.saavn.com/api.php?__call=autocomplete.get&_marker=0&query=",
         searchV2_suffix: "&ctx=android&_format=json&_marker=0",
         single_song_detailsV2: "https://www.jiosaavn.com/api.php?cc=in&_marker=0%3F_marker%3D0&_format=json&model=Redmi_5A&__call=song.getDetails&pids=", //Apppend Song Id eg. P4H0mL2F
-
+        getAlbumV2: "https://www.jiosaavn.com/api.php?_format=json&__call=content.getAlbumDetails&albumid=", //Append ALbum ID eg. 18291629
 
     }
 }))

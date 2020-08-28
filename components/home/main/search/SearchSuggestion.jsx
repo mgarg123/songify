@@ -92,7 +92,7 @@ export class SearchSuggestion extends Component {
                                         playSongCallBack={this.playSongCallBack}
                                         key={data.id}
                                         type={data.type}
-                                        imgId={data.image}
+                                        imgId={data.image.replace("-150x150.jpg", "-350x350.jpg")}
                                         songId={data.id}
                                         authorName={data.author}
                                         isRemovable={true}

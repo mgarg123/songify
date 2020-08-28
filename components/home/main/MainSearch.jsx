@@ -12,7 +12,9 @@ export class MainSearch extends Component {
             searchValue: "",
             searchResult: {},
             loading: false,
-            playSongData: {}
+            playSongData: {},
+            isAlbumClicked: false,
+            albumData: {}
         }
     }
 
@@ -27,6 +29,10 @@ export class MainSearch extends Component {
         this.setState({ playSongData: data })
     }
 
+    albumClickedCallBack = (albumData) => {
+        this.setState({ albumData: albumData })
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (this.state.searchValue !== prevState.searchValue && this.state.searchValue !== "") {
             fetch("/api/searchv2?q=" + this.state.searchValue)
@@ -39,6 +45,9 @@ export class MainSearch extends Component {
         if (this.state.playSongData !== prevState.playSongData) {
             this.props.playSongCallBack(this.state.playSongData)
         }
+
+        if (this.state.albumData !== prevState.albumData)
+            this.props.albumClickedCallBack(this.state.albumData)
     }
 
     render() {
@@ -51,6 +60,7 @@ export class MainSearch extends Component {
                             <SearchSuggestion playSongCallBack={this.playSongCallBack} /> :
                             <SearchResult
                                 playSongCallBack={this.playSongCallBack}
+                                albumClickedCallBack={this.albumClickedCallBack}
                                 result={this.state.searchResult} />
 
                     }

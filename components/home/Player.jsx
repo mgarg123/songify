@@ -25,7 +25,7 @@ export class Player extends Component {
             currentDuration: 0,
             isBuffering: false,
             totalDurationInTime: "00:00",
-            currentElapsedTime: "00:00"
+            currentElapsedTime: '00:00'
         }
         this.audioRef = React.createRef()
         this.rangeSlider = React.createRef()
@@ -89,8 +89,12 @@ export class Player extends Component {
             }
         }
         if (this.state.isFullScreen !== prevState.isFullScreen) {
-            if (this.state.isFullScreen)
+            if (this.state.isFullScreen) {
                 document.getElementById('root').style.overflowY = 'hidden'
+                let elapsedTime = durationToTime(this.audioRef.current.currentTime)
+                this.elapsedTime.current.innerHTML = elapsedTime
+            }
+
         }
 
     }
@@ -120,7 +124,7 @@ export class Player extends Component {
                 <div className={`player-footer ${this.state.isFullScreen ? 'fullscreen-pf' : ''}`}>
                     <div className={`image-div ${this.state.isFullScreen ? 'fullscreen-imgdiv' : ''}`}
                         onClick={this.fullScreenMode}>
-                        <img src={this.props.playSongData.image} alt="IMG" />
+                        <img src={this.props.playSongData.image.replace("-150x150.jpg", "-350x350.jpg")} alt="IMG" />
                         <IconContext.Provider value={{
                             size: '2em',
                             style: { display: `${this.state.isFullScreen ? 'block' : 'none'}` },

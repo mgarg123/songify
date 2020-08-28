@@ -3,6 +3,7 @@ import { RiCloseFill } from 'react-icons/ri'
 import { MdMoreVert } from 'react-icons/md'
 import { IconContext } from "react-icons"
 import Menu from '../../menu/Menu'
+import axios from 'axios'
 
 export class RecentSearchList extends Component {
     constructor(props) {
@@ -11,6 +12,8 @@ export class RecentSearchList extends Component {
         this.state = {
             playSongData: {},
             expandMore: false,
+            isAlbumClicked: false,
+            albumData: {}
         }
     }
 
@@ -48,6 +51,11 @@ export class RecentSearchList extends Component {
                     data.media_preview_url = mediaURL
                     this.setState({ playSongData: data })
                 }).catch(err => console.log(err.message));
+        } else if (this.props.type === "album") {
+            axios.get('/api/albumV2?id=' + this.props.songId).then(res => {
+                let data = res.data
+                this.setState({ albumData: data, isAlbumClicked: true })
+            }).catch(err => console.log(err.message))
         }
 
 
@@ -72,6 +80,9 @@ export class RecentSearchList extends Component {
             this.props.playSongCallBack(this.state.playSongData)
 
         }
+
+        if (this.state.albumData !== prevState.albumData)
+            this.props.albumClickedCallBack(this.state.albumData)
     }
 
     render() {
@@ -140,6 +151,7 @@ export class RecentSearchList extends Component {
                         artist={this.props.authorName}
                         title={this.props.searchTitle}
                         image={this.props.imgId}
+                        optionsArray={['Play Now', 'Details']}
                         clickHandleCallBack={this.clickHandle}
                         closeMoreOptionCallBack={this.closeMoreOptionCallBack}
                     />
