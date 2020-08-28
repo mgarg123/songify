@@ -9,8 +9,12 @@ const cors = initMiddleware(
 )
 
 async function handler(req, res) {
-    await cors(req, res)
-    axios.get(process.env.searchV2_prefix + "" + req.query.q + "" + process.env.searchV2_suffix).then(resp => {
+    // await cors(req, res)
+    axios.get(process.env.searchV2_prefix + "" + req.query.q + "" + process.env.searchV2_suffix, {
+        headers: {
+            'Access-Control-Allow-Origin': '*'
+        }
+    }).then(resp => {
         let data = resp.data
         res.send(data)
     }).catch(err => console.log(err.message))

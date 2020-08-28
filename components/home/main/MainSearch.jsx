@@ -36,9 +36,9 @@ export class MainSearch extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.searchValue !== prevState.searchValue && this.state.searchValue !== "") {
-            axios.get(process.env.searchV2_prefix + "" + this.state.searchValue + "" + process.env.searchV2_suffix).then(resp => {
+            axios.get('/api/searchv2?q=' + this.state.searchValue).then(resp => {
                 let data = resp.data
-                this.setState({ searchResult: resp, loading: false })
+                this.setState({ searchResult: data, loading: false })
             }).catch(err => console.log(err.message));
             // fetch("/api/searchv2?q=" + this.state.searchValue)
             //     .then(resp => resp.json())
