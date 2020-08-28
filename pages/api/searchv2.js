@@ -1,4 +1,5 @@
 import Cors from 'cors'
+import axios from 'axios'
 import initMiddleware from '../../lib/init-middleware'
 
 const cors = initMiddleware(
@@ -9,9 +10,10 @@ const cors = initMiddleware(
 
 async function handler(req, res) {
     await cors(req, res)
-    const resp = await fetch(process.env.searchV2_prefix + "" + req.query.q + "" + process.env.searchV2_suffix)
-    const data = await resp.json()
-    res.send(data)
+    axios.get(process.env.searchV2_prefix + "" + req.query.q + "" + process.env.searchV2_suffix).then(resp => {
+        let data = resp.data
+        res.send(data)
+    }).catch(err => console.log(err.message))
 }
 
 export default handler
