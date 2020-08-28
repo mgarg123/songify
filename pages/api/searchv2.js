@@ -10,7 +10,7 @@ const cors = initMiddleware(
 
 async function handler(req, res) {
     await cors(req, res)
-    axios.get(process.env.searchV2_prefix + "" + req.query.q + "" + process.env.searchV2_suffix, {
+    axios.get("https://cors-anywhere.herokuapp.com/" + process.env.searchV2_prefix + "" + req.query.q + "" + process.env.searchV2_suffix, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0'
         }
