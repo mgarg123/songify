@@ -4,6 +4,8 @@ import { IconContext } from 'react-icons'
 import { AiFillHeart } from 'react-icons/ai'
 import { FiPlay, FiArrowLeft } from 'react-icons/fi'
 import AlbumList from './AlbumList'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export class DetailsPage extends Component {
     constructor(props) {
@@ -12,12 +14,50 @@ export class DetailsPage extends Component {
         this.state = {
             isAlbumClicked: true,
             playSongData: {},
+            songsQueue: [],
+            displayAdded: false,
+            addedQuantity: 0
         }
     }
 
     componentDidMount() {
         //To scroll to top always when component mounts
         window.scrollTo(0, 0)
+    }
+
+    addAllSongsToQueue = () => {
+        let songsToAdd = this.props.albumData.songs
+        for (let i in songsToAdd) {
+            let mediaURL = songsToAdd[i].media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
+            songsToAdd[i].media_preview_url = mediaURL
+        }
+        let playCurrentFromQueue = songsToAdd[0]
+        this.setState({
+            songsQueue: songsToAdd,
+            playSongData: playCurrentFromQueue,
+            displayAdded: true,
+            addedQuantity: songsToAdd.length
+        })
+        setTimeout(() => {
+            this.setState({ displayAdded: false })
+        }, 2500)
+    }
+
+    addOneToQueueCallBack = (queueOne) => {
+        let currentQueue = [...this.props.songsQueueMain]
+        let isAlreadyPresent = currentQueue.findIndex(x => x.id === queueOne.id) !== -1
+        if (!isAlreadyPresent) {
+            currentQueue.push(queueOne)
+            this.setState({
+                songsQueue: currentQueue,
+                displayAdded: true,
+                addedQuantity: 1
+            })
+        }
+        setTimeout(() => {
+            this.setState({ displayAdded: false })
+        }, 2500)
+
     }
 
     playSongCallBack = (data) => {
@@ -31,6 +71,9 @@ export class DetailsPage extends Component {
         if (this.state.playSongData !== prevState.playSongData) {
             this.props.playSongCallBack(this.state.playSongData)
         }
+
+        if (this.state.songsQueue !== prevState.songsQueue)
+            this.props.songQueueCallBack(this.state.songsQueue)
     }
 
 
@@ -38,6 +81,7 @@ export class DetailsPage extends Component {
         return (
             <div className="details-root"
                 style={{ height: `${this.props.albumData.songs.length < 3 ? '100vh' : 'auto'}` }}>
+
                 <IconContext.Provider value={{
                     size: '2.5em',
                     style: {
@@ -50,6 +94,10 @@ export class DetailsPage extends Component {
                     },
                     className: 'go-back-icon'
                 }}>
+                    <span className={`display-queue ${this.state.displayAdded && '.disp-q-slide-down'}`}
+                        style={{ display: `${this.state.displayAdded ? 'inline-block' : 'none'}` }}
+                    >{`+${this.state.addedQuantity}`}</span>
+
                     <FiArrowLeft onClickCapture={() => this.setState({ isAlbumClicked: false })} />
                 </IconContext.Provider>
                 <div className="details-container">
@@ -57,9 +105,18 @@ export class DetailsPage extends Component {
                         <img src={this.props.albumData.image.replace("-150x150.jpg", "-250x250.jpg")} alt="" />
                     </div>
                     <div className="album-details">
-                        <div className="ad-title">{this.props.albumData.title}</div>
-                        <div className="ad-artist">{this.props.albumData.primary_artists}</div>
-                        <div className="ad-more-info">{this.props.albumData.year}</div>
+                        <div className="ad-title">{this.props.albumData.title.length > 33 ?
+                            this.props.albumData.title.substr(0, 32) + "..." :
+                            this.props.albumData.title
+                        }</div>
+                        <div className="ad-artist">{this.props.albumData.primary_artists.length > 50 ?
+                            this.props.albumData.primary_artists.substr(0, 50) + "..." :
+                            this.props.albumData.primary_artists
+                        }</div>
+                        <div className="ad-more-info">{this.props.albumData.play_count ?
+                            this.props.albumData.play_count.toLocaleString() + " plays" :
+                            this.props.albumData.year
+                        }</div>
                         <div className="ad-icons">
                             <IconContext.Provider value={{
                                 className: 'heart',
@@ -84,7 +141,7 @@ export class DetailsPage extends Component {
                                     margin: '6px'
                                 }
                             }}>
-                                <FiPlay />
+                                <FiPlay onClickCapture={this.addAllSongsToQueue} />
                             </IconContext.Provider>
                         </div>
 
@@ -98,6 +155,7 @@ export class DetailsPage extends Component {
                                         songId={data.id}
                                         index={index + 1}
                                         playSongCallBack={this.playSongCallBack}
+                                        addOneToQueueCallBack={this.addOneToQueueCallBack}
                                         title={data.song}
                                         type={data.type}
                                         image={data.image.replace('-150x150.jpg', '-250x250.jpg')}

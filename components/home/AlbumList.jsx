@@ -10,20 +10,29 @@ export class AlbumList extends Component {
 
         this.state = {
             expandMore: false,
-            playSongData: {}
+            playSongData: {},
+            queueOne: {}
         }
     }
 
 
-    clickHandle = (event) => {
+    clickHandle = (type) => {
         // console.log(this.props.songId);
         axios.get('/api/songDetailsV2?id=' + this.props.songId).then(res => {
             let data = res.data[this.props.songId]
             let mediaURL = data.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
             data.media_preview_url = mediaURL
-            this.setState({ playSongData: data })
+
+            if (type === "queue") {
+                this.setState({ queueOne: data })
+            } else {
+                this.setState({ playSongData: data })
+            }
+
+
         }).catch(err => console.log(err.message))
     }
+
 
     closeMoreOptionCallBack = (expandMore) => {
         this.setState({ expandMore: expandMore })
@@ -33,6 +42,9 @@ export class AlbumList extends Component {
         if (this.state.playSongData !== prevState.playSongData) {
             this.props.playSongCallBack(this.state.playSongData)
         }
+
+        if (this.state.queueOne !== prevState.queueOne)
+            this.props.addOneToQueueCallBack(this.state.queueOne)
     }
 
     render() {
@@ -74,6 +86,7 @@ export class AlbumList extends Component {
                         image={this.props.image}
                         clickHandleCallBack={this.clickHandle}
                         closeMoreOptionCallBack={this.closeMoreOptionCallBack}
+                        clickHandleCallBack={this.clickHandle}
                         optionsArray={['Play Now', 'Add to Queue']}
                     />
                 }

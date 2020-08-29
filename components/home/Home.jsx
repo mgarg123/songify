@@ -22,7 +22,11 @@ export class Home extends Component {
             whichTab: "home",
             playSongData: {},
             isAlbumClicked: false,
-            albumData: {}
+            albumData: {},
+            songsQueue: [],
+            queueNo: 0,
+            isPrevEnd: true,
+            isNextEnd: true
         }
     }
 
@@ -36,12 +40,43 @@ export class Home extends Component {
         this.setState({ playSongData: data })
     }
 
+    songQueueCallBack = (queue) => {
+        this.setState({ songsQueue: queue })
+    }
+
     albumClickedCallBack = (albumData) => {
         this.setState({ albumData: albumData, isAlbumClicked: true })
     }
 
     closeAlbumCallBack = (isAlbumClicked) => {
         this.setState({ isAlbumClicked: isAlbumClicked })
+    }
+
+    playNextCallBack = () => {
+        if (this.state.songsQueue.length && (this.state.queueNo < this.state.songsQueue.length - 1)) {
+            let playData = this.state.songsQueue[this.state.queueNo + 1]
+            this.setState((prevState) => ({
+                playSongData: playData,
+                queueNo: prevState.queueNo + 1
+            }))
+        }
+        // if (this.state.queueNo === 0 && this.state.songsQueue.length > 0) {
+        //     this.setState({ isPrevEnd: true, isNextEnd: false })
+        // }
+    }
+
+    playPrevCallBack = () => {
+        if (this.state.songsQueue.length && (this.state.queueNo > 0)) {
+            let playData = this.state.songsQueue[this.state.queueNo - 1]
+            this.setState((prevState) => ({
+                playSongData: playData,
+                queueNo: prevState.queueNo - 1
+            }))
+        }
+
+        // if (this.state.queueNo === this.state.songsQueue.length - 1 && this.state.songsQueue.length > 0) {
+        //     this.setState({ isPrevEnd: false, isNextEnd: true })
+        // }
     }
 
     tabsCallBack = (tab) => {
@@ -72,7 +107,9 @@ export class Home extends Component {
                                 this.state.isAlbumClicked ?
                                     <DetailsPage
                                         albumClickedCallBack={this.closeAlbumCallBack}
+                                        songQueueCallBack={this.songQueueCallBack}
                                         playSongCallBack={this.playSongCallBack}
+                                        songsQueueMain={this.state.songsQueue}
                                         albumData={this.state.albumData}
                                     /> :
                                     <MainSearch
@@ -84,7 +121,15 @@ export class Home extends Component {
                                     <MainAccount />
                     }
                     {
-                        Object.keys(this.state.playSongData).length !== 0 && <Player visible={true} playSongData={this.state.playSongData} />
+                        Object.keys(this.state.playSongData).length !== 0 &&
+                        <Player visible={true}
+                            playSongData={this.state.playSongData}
+                            playNextCallBack={this.playNextCallBack}
+                            playPrevCallBack={this.playPrevCallBack}
+                            isPrevEnd={this.state.isPrevEnd}
+                            isNextEnd={this.state.isNextEnd}
+                            songsQueue={this.state.songsQueue}
+                        />
                     }
                     <Footer tabsCallBack={this.tabsCallBack} />
                 </Provider>

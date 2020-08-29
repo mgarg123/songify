@@ -6,6 +6,7 @@ import { IconContext } from "react-icons"
 import ClipLoader from 'react-spinners/ClipLoader'
 import durationToTime from '../../lib/durationToTime.js'
 import dynamic from 'next/dynamic'
+import { CgPlayTrackPrev, CgPlayTrackNext } from 'react-icons/cg'
 
 //Dynamic import and turning off server side import so that we do not get 'window is not defined' error!
 const MediaSession = dynamic(() => {
@@ -25,7 +26,9 @@ export class Player extends Component {
             currentDuration: 0,
             isBuffering: false,
             totalDurationInTime: "00:00",
-            currentElapsedTime: '00:00'
+            currentElapsedTime: '00:00',
+            playSongData: {},
+            queueNo: 0
         }
         this.audioRef = React.createRef()
         this.rangeSlider = React.createRef()
@@ -40,7 +43,14 @@ export class Player extends Component {
 
         let duration = this.props.playSongData.duration + ""
         let totalTime = durationToTime(duration)
+
         this.setState({ totalDurationInTime: totalTime })
+        if (this.audioRef.current) {
+            this.audioRef.current.addEventListener('ended', () => {
+                this.props.playNextCallBack()
+            });
+        }
+
     }
 
     //Handle URL error, revert to 64 KBPS if 320 KBPS mp3 not found 
@@ -82,10 +92,20 @@ export class Player extends Component {
         // this.setState({ currentDuration: event.target.value })
     }
 
+    // onSongEnd = (event) => {
+    //     alert("end")
+    //     this.props.playNextCallBack()
+    // }
+
+
     componentDidUpdate(prevProps, prevState) {
         if (this.props.playSongData !== prevProps.playSongData) {
             if (this.audioRef.current !== null) {
                 this.audioRef.current.play().catch(() => console.log("Error in URL"));
+
+                //Set total duration of next song as didMount won't be called again
+                let totalDuration = durationToTime(this.props.playSongData.duration)
+                this.setState({ totalDurationInTime: totalDuration })
             }
         }
         if (this.state.isFullScreen !== prevState.isFullScreen) {
@@ -96,6 +116,9 @@ export class Player extends Component {
             }
 
         }
+
+        if (this.props.playSongData !== prevProps.playSongData)
+            this.setState({ playSongData: this.props.playSongData })
 
     }
 
@@ -141,13 +164,13 @@ export class Player extends Component {
                                     this.props.playSongData.song.length > 32 && this.state.isFullScreen) && this.state.isPlaying ?
                                     <marquee behavior="scroll"
                                         direction="left"
-                                        dangerouslySetInnerHTML={{ __html: `${this.props.playSongData.song}` }}
                                         scrollamount="6"
                                         loop="2"
-                                    ></marquee> :
-                                    <span
-                                        dangerouslySetInnerHTML={{ __html: this.props.playSongData.song.substr(0, 36) }}
-                                    ></span>
+                                    >{this.props.playSongData.song}</marquee> :
+                                    <span>{this.props.playSongData.song.length > 28 ?
+                                        this.props.playSongData.song.substr(0, 27) + "..." :
+                                        this.props.playSongData.song
+                                    }</span>
                             }
 
                         </div>
@@ -159,13 +182,13 @@ export class Player extends Component {
                                     this.props.playSongData.singers.length > 52 && this.state.isFullScreen) && this.state.isPlaying ?
                                     <marquee behavior="scroll"
                                         direction="left"
-                                        dangerouslySetInnerHTML={{ __html: `${this.props.playSongData.singers}` }}
                                         scrollamount="6"
                                         loop="2"
-                                    ></marquee> :
-                                    <span
-                                        dangerouslySetInnerHTML={{ __html: `${this.props.playSongData.singers}` }}
-                                    ></span>
+                                    >{this.props.playSongData.singers}</marquee> :
+                                    <span>{this.props.playSongData.singers.length > 38 ?
+                                        this.props.playSongData.singers.substr(0, 37) + '...' :
+                                        this.props.playSongData.singers
+                                    }</span>
                             }
 
                         </div>
@@ -182,11 +205,28 @@ export class Player extends Component {
                             onChange={this.seek}
 
                         />
-                        <span id="play-pause">
+                        <span id="play-pause"
+                            style={{}}
+                        >
+
+                            {
+                                this.state.isFullScreen &&
+                                <IconContext.Provider value={{
+                                    size: '2.5em',
+                                    // style: {
+                                    //     pointerEvents: `${this.props.isNextEnd && 'none'}`,
+                                    //     color: `${this.props.isNextEnd && 'grey'}`
+                                    // }
+                                }}>
+                                    <CgPlayTrackPrev onClickCapture={() => this.props.playPrevCallBack()} />
+                                </IconContext.Provider>
+                            }
                             <IconContext.Provider value={{
                                 size: `${this.state.isFullScreen ? '2.5em' : '1.4em'}`,
                                 className: `play-pause ${this.state.isFullScreen ? 'play-pause-animate' : ''}`,
-                                style: { display: `${this.state.isBuffering ? 'none' : 'block'}` }
+                                style: {
+                                    display: `${this.state.isBuffering ? 'none' : 'block'}`
+                                }
                             }}>
                                 {
                                     this.state.isPlaying ?
@@ -198,20 +238,35 @@ export class Player extends Component {
                                         />
                                 }
                             </IconContext.Provider>
+                            <ClipLoader
+                                css={`display:flex;justify-content:center;align-items:center; display:${this.state.isBuffering ? 'block' : 'none'}`}
+                                size={35}
+                                color={"#757575"}
+                            />
+                            {
+                                this.state.isFullScreen &&
+                                <IconContext.Provider value={{
+                                    size: '2.5em',
+                                    // style: {
+                                    //     pointerEvents: `${this.props.isNextEnd && 'none'}`,
+                                    //     color: `${this.props.isNextEnd && 'grey'}`
+                                    // }
+                                }}>
+                                    <CgPlayTrackNext onClickCapture={() => this.props.playNextCallBack()} />
+                                </IconContext.Provider>
+                            }
+
                         </span>
 
-                        <ClipLoader
-                            css={`display:flex;justify-content:center;align-items:center; display:${this.state.isBuffering ? 'block' : 'none'}`}
-                            size={35}
-                            color={"#757575"}
-                        />
+
                         {
                             this.state.isFullScreen &&
                             <Fragment>
                                 <span
                                     ref={this.elapsedTime}
                                     className="song-play-elapsed-time">00:00</span>
-                                <span className="song-end-time">{this.state.totalDurationInTime}</span>
+                                <span
+                                    className="song-end-time">{this.state.totalDurationInTime}</span>
                             </Fragment>
                         }
 

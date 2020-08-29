@@ -52,7 +52,7 @@ export class Menu extends Component {
                             ></div>
                         </div>
                         <ul>
-                            <li onClick={() => this.props.clickHandleCallBack()}>
+                            <li onClick={() => this.props.clickHandleCallBack("play")}>
                                 <IconContext.Provider value={{
                                     size: '1.2em',
                                     color: 'rgb(11, 226, 226)'
@@ -68,8 +68,8 @@ export class Menu extends Component {
                                 }}>
                                     {
                                         this.props.optionsArray[1] === 'Details' ?
-                                            <FaInfoCircle /> :
-                                            <MdQueueMusic />
+                                            <FaInfoCircle onClickCapture={this.props.clickHandleCallBack("details")} /> :
+                                            <MdQueueMusic onClickCapture={this.props.clickHandleCallBack("queue")} />
                                     }
 
                                 </IconContext.Provider>

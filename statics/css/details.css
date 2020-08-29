@@ -9,6 +9,35 @@
     animation: slide-right 1.2s ease-in-out;
 }
 
+.display-queue {
+    position: absolute;
+    top: 12px;
+    right: 8px;
+    background: rgb(3, 194, 194);
+    height: 40px;
+    font-weight: bold;
+    transition: top 0.7s ease-in-out;
+    z-index: 9999;
+    padding: 9px 0px;
+    font-size: 1.1em;
+    width: 40px;
+    text-align: center;
+    border-radius: 40px;
+}
+
+.disp-q-slide-down {
+    animation: slide-down-q 0.6s ease-in-out;
+}
+
+@keyframes slide-down-q {
+    0% {
+        transform: translateY(100%);
+    }
+    100% {
+        transform: translateY(0%);
+    }
+}
+
 @keyframes slide-right {
     0% {
         transform: translateX(-150%);
@@ -72,6 +101,11 @@
 
 .ad-icons .heart {
     animation: rotate360 0.5s ease-in-out;
+    cursor: pointer;
+}
+
+.ad-icons .playAll {
+    cursor: pointer;
 }
 
 @keyframes rotate360 {

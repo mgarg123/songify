@@ -18,7 +18,7 @@ export class RecentSearchList extends Component {
     }
 
 
-    clickHandle = () => {
+    clickHandle = (type) => {
         let history = localStorage.getItem('songify_search_history')
 
         let checkFirst = JSON.parse(history)
@@ -49,7 +49,22 @@ export class RecentSearchList extends Component {
                     let data = resp[this.props.songId]
                     let mediaURL = data.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
                     data.media_preview_url = mediaURL
-                    this.setState({ playSongData: data })
+
+                    if (type === "details") {
+                        let albumData = {
+                            title: data.song,
+                            name: data.song,
+                            year: data.year,
+                            image: data.image,
+                            primary_artists: data.primary_artists,
+                            play_count: data.play_count,
+                            songs: [data]
+                        }
+                        this.setState({ albumData: albumData, isAlbumClicked: true })
+                    } else {
+                        this.setState({ playSongData: data })
+                    }
+
                 }).catch(err => console.log(err.message));
         } else if (this.props.type === "album") {
             axios.get('/api/albumV2?id=' + this.props.songId).then(res => {
@@ -57,9 +72,8 @@ export class RecentSearchList extends Component {
                 this.setState({ albumData: data, isAlbumClicked: true })
             }).catch(err => console.log(err.message))
         }
-
-
     }
+
 
     removeFromSuggestion = (event) => {
         let history = JSON.parse(localStorage.getItem('songify_search_history'))

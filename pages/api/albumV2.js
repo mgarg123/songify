@@ -16,6 +16,13 @@ async function handler(req, res) {
         let obj = new Object(datas)
         let newData = obj.substr(obj.indexOf('{'), obj.length - 1)
         let resss = JSON.parse(newData)
+        resss.title = resss.title.replace('&quot;', "'").replace('&amp;', '&')
+        resss.primary_artists = resss.primary_artists.replace('&quot;', "'").replace('&amp;', '&')
+        for (let i in resss.songs) {
+            resss.songs[i].song = resss.songs[i].song.replace('&quot;', "'").replace('&amp;', '&')
+            resss.songs[i].singers = resss.songs[i].singers.replace('&quot;', "'").replace('&amp;', '&')
+            resss.songs[i].primary_artists = resss.songs[i].primary_artists.replace('&quot;', "'").replace('&amp;', '&')
+        }
         res.send(resss)
 
 
