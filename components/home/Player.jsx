@@ -7,6 +7,8 @@ import ClipLoader from 'react-spinners/ClipLoader'
 import durationToTime from '../../lib/durationToTime.js'
 import dynamic from 'next/dynamic'
 import { CgPlayTrackPrev, CgPlayTrackNext } from 'react-icons/cg'
+import axios from 'axios'
+import Hls from 'hls.js'
 
 //Dynamic import and turning off server side import so that we do not get 'window is not defined' error!
 const MediaSession = dynamic(() => {
@@ -51,15 +53,64 @@ export class Player extends Component {
             });
         }
 
+
+
     }
 
-    //Handle URL error, revert to 64 KBPS if 320 KBPS mp3 not found 
+    //Handle URL error, search for best quality else revert to 64 KBPS if 320 KBPS mp3 not found 
     audioError = (event) => {
 
-        let url = this.props.playSongData.media_preview_url
-        url = url.replace("_320", "_64")
-        this.audioRef.current.src = url
-        this.audioRef.current.play().catch(() => console.log("Error in URL"));
+        if (this.audioRef.current.src.match("m3u8") !== null) {
+            let url = this.props.playSongData.media_preview_url
+            url = url.replace("_320", "_64")
+            this.audioRef.current.src = url
+            this.audioRef.current.play().catch(() => console.log("Error in URL"));
+        } else {
+            //Fetch HIGH Quality song from other API
+            let song = this.props.playSongData.song
+            let singer = this.props.playSongData.singers.split(",")[0]
+            axios.get('/api/search?q=' + song + "+" + singer).then(resp => {
+                let data = resp.data.result.data["Best Match"]
+                let songId = ""
+                if (data.length) {
+                    songId = data[0].id
+                    let url = `https://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/${songId.split('_')[0]}/${songId.split('_')[1]}/${songId}_320.mp4/playlist.m3u8`
+
+                    console.log(url);
+                    this.audioRef.current.src = url;
+                    this.audioRef.current.play();
+                    //Setting Up HLS JS to play m3u8 file
+                    if (this.audioRef.current !== null && this.audioRef.current.src.match('m3u8') !== null) {
+                        if (Hls.isSupported) {
+                            let hls = new Hls();
+                            hls.loadSource(this.audioRef.current.src);
+                            hls.attachMedia(this.audioRef.current);
+                            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                                this.audioRef.current.play()
+                            });
+                        }
+                        else if (this.audioRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+                            this.audioRef.current.addEventListener('loadedmetadata', function () {
+                                this.audioRef.current.play()
+                            });
+                        }
+                    }
+
+
+                } else {
+                    let url = this.props.playSongData.media_preview_url
+                    url = url.replace("_320", "_64")
+                    this.audioRef.current.src = url
+                    this.audioRef.current.play().catch(() => console.log("Error in URL"));
+                }
+
+            }).catch(err => console.log(err.message));
+        }
+
+        if (this.audioRef.current.src.match('m3u8') !== null) {
+
+        }
+
     }
 
     timeUpdate = (event) => {
@@ -119,6 +170,23 @@ export class Player extends Component {
 
         if (this.props.playSongData !== prevProps.playSongData)
             this.setState({ playSongData: this.props.playSongData })
+
+        if (this.audioRef.current !== null && this.audioRef.current.src.match('m3u8') !== null) {
+            // if (Hls.isSupported) {
+            //     console.log("supported hLS");
+            //     let hls = new Hls();
+            //     hls.loadSource(this.audioRef.current.src);
+            //     hls.attachMedia(this.audioRef.current);
+            //     hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            //         this.audioRef.current.play()
+            //     });
+            // }
+            // else if (this.audioRef.current.canPlayType('application/vnd.apple.mpegurl')) {
+            //     this.audioRef.current.addEventListener('loadedmetadata', function () {
+            //         this.audioRef.current.play()
+            //     });
+            // }
+        }
 
     }
 
@@ -272,6 +340,8 @@ export class Player extends Component {
 
                         <audio
                             ref={this.audioRef}
+                            autoPlay="autoplay"
+                            preload="metadata"
                             src={this.props.playSongData.media_preview_url}
                             onPlay={() => this.setState({ isPlaying: true })}
                             onPause={() => this.setState({ isPlaying: false })}
