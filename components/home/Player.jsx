@@ -76,7 +76,6 @@ export class Player extends Component {
                     songId = data[0].id
                     let url = `https://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/${songId.split('_')[0]}/${songId.split('_')[1]}/${songId}_320.mp4/playlist.m3u8`
 
-                    console.log(url);
                     this.audioRef.current.src = url;
                     this.audioRef.current.play();
                     //Setting Up HLS JS to play m3u8 file
