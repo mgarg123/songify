@@ -1,5 +1,6 @@
 import Cors from 'cors'
 import axios from 'axios'
+import unescape from 'lodash.unescape'
 import initMiddleware from '../../lib/init-middleware'
 
 const cors = initMiddleware(
@@ -16,12 +17,12 @@ async function handler(req, res) {
         let obj = new Object(datas)
         let newData = obj.substr(obj.indexOf('{'), obj.length - 1)
         let resss = JSON.parse(newData)
-        resss.title = resss.title.replace('&quot;', "'").replace('&amp;', '&')
-        resss.primary_artists = resss.primary_artists.replace('&quot;', "'").replace('&amp;', '&')
+        resss.title = unescape(resss.title)
+        resss.primary_artists = unescape(resss.primary_artists)
         for (let i in resss.songs) {
-            resss.songs[i].song = resss.songs[i].song.replace('&quot;', "'").replace('&amp;', '&')
-            resss.songs[i].singers = resss.songs[i].singers.replace('&quot;', "'").replace('&amp;', '&')
-            resss.songs[i].primary_artists = resss.songs[i].primary_artists.replace('&quot;', "'").replace('&amp;', '&')
+            resss.songs[i].song = unescape(resss.songs[i].song).replace('&#039;', "'")
+            resss.songs[i].singers = unescape(resss.songs[i].singers)
+            resss.songs[i].primary_artists = unescape(resss.songs[i].primary_artists)
         }
         res.send(resss)
 

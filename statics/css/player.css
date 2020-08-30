@@ -92,11 +92,22 @@
 
 .fullscreen-imgdiv {
     width: 100%;
-    background: linear-gradient(90deg, #e8d0d0, #e0b1b1);
+    /* background: linear-gradient(90deg, #e8d0d0, #e0b1b1); */
+    transition: background 0.5s ease-in-out;
     height: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    animation: animate-bg 0.4s ease-in-out;
+}
+
+@keyframes animate-bg {
+    0% {
+        filter: opacity(0.3);
+    }
+    100% {
+        filter: opacity(1);
+    }
 }
 
 .fullscreen-imgdiv img {
@@ -124,7 +135,8 @@
 
 .fullscreen-songdet {
     width: 100%;
-    background: linear-gradient(60deg, #e8d0d0, #e0b1b1);
+    /* background: linear-gradient(60deg, #e8d0d0, #e0b1b1); */
+    transition: background 0.5s ease-in-out;
     height: 25%;
     color: #000;
     font-weight: bold;

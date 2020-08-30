@@ -9,6 +9,8 @@ import dynamic from 'next/dynamic'
 import { CgPlayTrackPrev, CgPlayTrackNext } from 'react-icons/cg'
 import axios from 'axios'
 import Hls from 'hls.js'
+import isColorDark from '../../lib/isColorDark'
+import { ColorExtractor } from 'react-color-extractor'
 
 //Dynamic import and turning off server side import so that we do not get 'window is not defined' error!
 const MediaSession = dynamic(() => {
@@ -30,7 +32,9 @@ export class Player extends Component {
             totalDurationInTime: "00:00",
             currentElapsedTime: '00:00',
             playSongData: {},
-            queueNo: 0
+            queueNo: 0,
+            colors: [],
+            backgroundColor: ""
         }
         this.audioRef = React.createRef()
         this.rangeSlider = React.createRef()
@@ -77,20 +81,29 @@ export class Player extends Component {
                     let url = `https://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/${songId.split('_')[0]}/${songId.split('_')[1]}/${songId}_320.mp4/playlist.m3u8`
 
                     this.audioRef.current.src = url;
-                    this.audioRef.current.play();
                     //Setting Up HLS JS to play m3u8 file
+                    setTimeout(() => {
+                        //This will check whether m3u8 file is playing or not, if not it will revert back to available api
+                        if (this.state.isBuffering) {
+                            let url = this.props.playSongData.media_preview_url
+                            url = url.replace("_320", "_64")
+                            this.audioRef.current.src = url
+                            this.audioRef.current.play().catch(() => console.log("Error in URL"));
+                        }
+
+                    }, 6000);
                     if (this.audioRef.current !== null && this.audioRef.current.src.match('m3u8') !== null) {
                         if (Hls.isSupported) {
                             let hls = new Hls();
                             hls.loadSource(this.audioRef.current.src);
                             hls.attachMedia(this.audioRef.current);
                             hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                                this.audioRef.current.play()
+                                this.audioRef.current.play().catch(err => console.log('error in play 1'))
                             });
                         }
                         else if (this.audioRef.current.canPlayType('application/vnd.apple.mpegurl')) {
                             this.audioRef.current.addEventListener('loadedmetadata', function () {
-                                this.audioRef.current.play()
+                                this.audioRef.current.play().catch(err => console.log('error in play 2'))
                             });
                         }
                     }
@@ -170,28 +183,18 @@ export class Player extends Component {
         if (this.props.playSongData !== prevProps.playSongData)
             this.setState({ playSongData: this.props.playSongData })
 
-        if (this.audioRef.current !== null && this.audioRef.current.src.match('m3u8') !== null) {
-            // if (Hls.isSupported) {
-            //     console.log("supported hLS");
-            //     let hls = new Hls();
-            //     hls.loadSource(this.audioRef.current.src);
-            //     hls.attachMedia(this.audioRef.current);
-            //     hls.on(Hls.Events.MANIFEST_PARSED, function () {
-            //         this.audioRef.current.play()
-            //     });
-            // }
-            // else if (this.audioRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-            //     this.audioRef.current.addEventListener('loadedmetadata', function () {
-            //         this.audioRef.current.play()
-            //     });
-            // }
+        if (this.state.colors !== prevState.colors) {
+            let colors = isColorDark(this.state.colors)
+            this.setState({ backgroundColor: colors })
         }
-
     }
 
     render() {
         return (
             <Fragment>
+                <ColorExtractor
+                    src={"https://api.codetabs.com/v1/proxy/?quest=" + this.props.playSongData.image}
+                    getColors={colors => this.setState({ colors: colors })} />
                 <MediaSession
                     title={this.props.playSongData.song}
                     artist={this.props.playSongData.singers}
@@ -211,9 +214,25 @@ export class Player extends Component {
                         this.audioRef.current.currentTime = 0}
                     onSeekForward={() => this.audioRef.current.currentTime += 10}
                 />
-                <div className={`player-footer ${this.state.isFullScreen ? 'fullscreen-pf' : ''}`}>
+                <div className={`player-footer ${this.state.isFullScreen ? 'fullscreen-pf' : ''}`}
+                    style={{
+                        background: `${this.state.isFullScreen ?
+                            this.state.colors.length ?
+                                `linear-gradient(60deg, ${this.state.backgroundColor.split(",")[0]}, ${this.state.backgroundColor.split(",")[1]})` :
+                                'linear-gradient(60deg, #e8d0d0, #e0b1b1)' :
+                            '#222'}`,
+                    }}
+                >
                     <div className={`image-div ${this.state.isFullScreen ? 'fullscreen-imgdiv' : ''}`}
-                        onClick={this.fullScreenMode}>
+                        onClick={this.fullScreenMode}
+                    // style={{
+                    //     background: `${this.state.isFullScreen ?
+                    //         this.state.colors.length ?
+                    //             `linear-gradient(90deg, ${this.state.backgroundColor.split(",")[0]}, ${this.state.backgroundColor.split(",")[1]})` :
+                    //             'linear-gradient(90deg, #e8d0d0, #e0b1b1)' :
+                    //         '#222'}`
+                    // }}
+                    >
                         <img src={this.props.playSongData.image.replace("-150x150.jpg", "-350x350.jpg")} alt="IMG" />
                         <IconContext.Provider value={{
                             size: '2em',
@@ -224,7 +243,16 @@ export class Player extends Component {
                         </IconContext.Provider>
                     </div>
                     <div className={`song-details ${this.state.isFullScreen ? 'fullscreen-songdet' : ''}`}
-                        onClick={this.fullScreenMode}>
+                        onClick={this.fullScreenMode}
+                        style={{
+                            // background: `${this.state.isFullScreen ?
+                            //     this.state.colors.length ?
+                            //         `linear-gradient(60deg, ${this.state.backgroundColor.split(",")[0]}, ${this.state.backgroundColor.split(",")[1]})` :
+                            //         'linear-gradient(60deg, #e8d0d0, #e0b1b1)' :
+                            //     '#222'}`,
+                            pointerEvents: `${this.state.isFullScreen ? 'none' : 'all'}`
+                        }}
+                    >
                         <div className="song-title">
                             {
                                 (this.props.playSongData.song.length > 28 && !this.state.isFullScreen ||
@@ -260,7 +288,16 @@ export class Player extends Component {
 
                         </div>
                     </div>
-                    <div className={`audio-element ${this.state.isFullScreen ? 'fullscreen-audioelmnt' : ''}`}>
+                    <div className={`audio-element ${this.state.isFullScreen ? 'fullscreen-audioelmnt' : ''}`}
+                        style={{
+                            background: `${this.state.isFullScreen ?
+                                this.state.colors.length ?
+                                    `linear-gradient(60deg, ${this.state.backgroundColor.split(",")[2]}, ${this.state.backgroundColor.split(",")[3]})` :
+                                    '#222' :
+                                '#222'}`,
+                            boxShadow: `0 3px 50px 1px ${this.state.backgroundColor.split(",")[2]};`
+                        }}
+                    >
                         <input type="range"
                             name="slider"
                             id="range-slider"
