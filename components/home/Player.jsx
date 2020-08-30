@@ -11,6 +11,7 @@ import axios from 'axios'
 import Hls from 'hls.js'
 import isColorDark from '../../lib/isColorDark'
 import { ColorExtractor } from 'react-color-extractor'
+import Color, { Palette } from 'color-thief-react'
 
 //Dynamic import and turning off server side import so that we do not get 'window is not defined' error!
 const MediaSession = dynamic(() => {
@@ -32,9 +33,7 @@ export class Player extends Component {
             totalDurationInTime: "00:00",
             currentElapsedTime: '00:00',
             playSongData: {},
-            queueNo: 0,
-            colors: [],
-            backgroundColor: ""
+            queueNo: 0
         }
         this.audioRef = React.createRef()
         this.rangeSlider = React.createRef()
@@ -182,19 +181,12 @@ export class Player extends Component {
 
         if (this.props.playSongData !== prevProps.playSongData)
             this.setState({ playSongData: this.props.playSongData })
-
-        if (this.state.colors !== prevState.colors) {
-            let colors = isColorDark(this.state.colors)
-            this.setState({ backgroundColor: colors })
-        }
     }
 
     render() {
         return (
             <Fragment>
-                <ColorExtractor
-                    src={"https://api.codetabs.com/v1/proxy/?quest=" + this.props.playSongData.image}
-                    getColors={colors => this.setState({ colors: colors })} />
+
                 <MediaSession
                     title={this.props.playSongData.song}
                     artist={this.props.playSongData.singers}
@@ -214,180 +206,208 @@ export class Player extends Component {
                         this.audioRef.current.currentTime = 0}
                     onSeekForward={() => this.audioRef.current.currentTime += 10}
                 />
-                <div className={`player-footer ${this.state.isFullScreen ? 'fullscreen-pf' : ''}`}
-                    style={{
-                        background: `${this.state.isFullScreen ?
-                            this.state.colors.length ?
-                                `linear-gradient(60deg, ${this.state.backgroundColor.split(",")[0]}, ${this.state.backgroundColor.split(",")[1]})` :
-                                'linear-gradient(60deg, #e8d0d0, #e0b1b1)' :
-                            '#222'}`,
-                    }}
+                <Color
+                    src={"https://api.codetabs.com/v1/proxy/?quest=" + this.props.playSongData.image}
+                    format="hex"
+                    crossOrigin="anonymous"
                 >
-                    <div className={`image-div ${this.state.isFullScreen ? 'fullscreen-imgdiv' : ''}`}
-                        onClick={this.fullScreenMode}
-                    // style={{
-                    //     background: `${this.state.isFullScreen ?
-                    //         this.state.colors.length ?
-                    //             `linear-gradient(90deg, ${this.state.backgroundColor.split(",")[0]}, ${this.state.backgroundColor.split(",")[1]})` :
-                    //             'linear-gradient(90deg, #e8d0d0, #e0b1b1)' :
-                    //         '#222'}`
-                    // }}
-                    >
-                        <img src={this.props.playSongData.image.replace("-150x150.jpg", "-350x350.jpg")} alt="IMG" />
-                        <IconContext.Provider value={{
-                            size: '2em',
-                            style: { display: `${this.state.isFullScreen ? 'block' : 'none'}` },
-                            className: "close-player"
-                        }}>
-                            <MdClose onClick={this.closeFullScreen} />
-                        </IconContext.Provider>
-                    </div>
-                    <div className={`song-details ${this.state.isFullScreen ? 'fullscreen-songdet' : ''}`}
-                        onClick={this.fullScreenMode}
-                        style={{
-                            // background: `${this.state.isFullScreen ?
-                            //     this.state.colors.length ?
-                            //         `linear-gradient(60deg, ${this.state.backgroundColor.split(",")[0]}, ${this.state.backgroundColor.split(",")[1]})` :
-                            //         'linear-gradient(60deg, #e8d0d0, #e0b1b1)' :
-                            //     '#222'}`,
-                            pointerEvents: `${this.state.isFullScreen ? 'none' : 'all'}`
-                        }}
-                    >
-                        <div className="song-title">
-                            {
-                                (this.props.playSongData.song.length > 28 && !this.state.isFullScreen ||
-                                    this.props.playSongData.song.length > 32 && this.state.isFullScreen) && this.state.isPlaying ?
-                                    <marquee behavior="scroll"
-                                        direction="left"
-                                        scrollamount="6"
-                                        loop="2"
-                                    >{this.props.playSongData.song}</marquee> :
-                                    <span>{this.props.playSongData.song.length > 28 ?
-                                        this.props.playSongData.song.substr(0, 27) + "..." :
-                                        this.props.playSongData.song
-                                    }</span>
-                            }
+                    {
+                        ({ data, loading }) => {
+                            // console.log(data)
+                            let mainColor = data
+                            return (
+                                <Fragment>
+                                    <Palette
+                                        src={"https://api.codetabs.com/v1/proxy/?quest=" + this.props.playSongData.image}
+                                        format="hex"
+                                        crossOrigin="anonymous"
+                                        colorCount={5}
+                                    >
+                                        {
+                                            ({ data, loading }) => {
+                                                // console.log("pal: " + data)
+                                                let color = isColorDark(data)
+                                                let randColor1 = color[Math.floor(Math.random() * 5)]
+                                                let randColor2 = color[Math.floor(Math.random() * 5)]
+                                                return (
+                                                    <div className={`player-footer ${this.state.isFullScreen ? 'fullscreen-pf' : ''}`}
+                                                        style={{
+                                                            background: `${this.state.isFullScreen ?
+                                                                !loading ?
+                                                                    `linear-gradient(60deg, ${color[0]}, ${color[1]})` :
+                                                                    'linear-gradient(60deg, #e8d0d0, #e0b1b1)' :
+                                                                '#222'}`
+                                                        }}
+                                                    >
+                                                        <div className={`image-div ${this.state.isFullScreen ? 'fullscreen-imgdiv' : ''}`}
+                                                            onClick={this.fullScreenMode}>
+                                                            <img src={this.props.playSongData.image.replace("-150x150.jpg", "-350x350.jpg")} alt="IMG" />
+                                                            <IconContext.Provider value={{
+                                                                size: '2em',
+                                                                style: {
+                                                                    display: `${this.state.isFullScreen ? 'block' : 'none'}`,
+                                                                    borderRadius: '30px',
+                                                                    color: '#fff',
+                                                                    boxShadow: '0px 0px 4px 2px rgba(0,0,0,0.5)'
+                                                                },
+                                                                className: "close-player"
+                                                            }}>
+                                                                <MdClose onClick={this.closeFullScreen} />
+                                                            </IconContext.Provider>
+                                                        </div>
+                                                        <div className={`song-details ${this.state.isFullScreen ? 'fullscreen-songdet' : ''}`}
+                                                            onClick={this.fullScreenMode}
+                                                            style={{
+                                                                pointerEvents: `${this.state.isFullScreen ? 'none' : 'all'}`
+                                                            }}
+                                                        >
+                                                            <div className="song-title">
+                                                                {
+                                                                    (this.props.playSongData.song.length > 28 && !this.state.isFullScreen ||
+                                                                        this.props.playSongData.song.length > 32 && this.state.isFullScreen) && this.state.isPlaying ?
+                                                                        <marquee behavior="scroll"
+                                                                            direction="left"
+                                                                            scrollamount="6"
+                                                                            loop="2"
+                                                                        >{this.props.playSongData.song}</marquee> :
+                                                                        <span>{this.props.playSongData.song.length > 28 ?
+                                                                            this.props.playSongData.song.substr(0, 27) + "..." :
+                                                                            this.props.playSongData.song
+                                                                        }</span>
+                                                                }
 
-                        </div>
-                        <div className="song-author"
-                            style={{ color: `${this.state.isFullScreen ? '#2d2d2d' : '#c5c5c5'}` }}
-                        >
-                            {
-                                (this.props.playSongData.singers.length > 39 && !this.state.isFullScreen ||
-                                    this.props.playSongData.singers.length > 52 && this.state.isFullScreen) && this.state.isPlaying ?
-                                    <marquee behavior="scroll"
-                                        direction="left"
-                                        scrollamount="6"
-                                        loop="2"
-                                    >{this.props.playSongData.singers}</marquee> :
-                                    <span>{this.props.playSongData.singers.length > 38 ?
-                                        this.props.playSongData.singers.substr(0, 37) + '...' :
-                                        this.props.playSongData.singers
-                                    }</span>
-                            }
+                                                            </div>
+                                                            <div className="song-author"
+                                                                style={{ color: `${this.state.isFullScreen ? '#2d2d2d' : '#c5c5c5'}` }}
+                                                            >
+                                                                {
+                                                                    (this.props.playSongData.singers.length > 39 && !this.state.isFullScreen ||
+                                                                        this.props.playSongData.singers.length > 52 && this.state.isFullScreen) && this.state.isPlaying ?
+                                                                        <marquee behavior="scroll"
+                                                                            direction="left"
+                                                                            scrollamount="6"
+                                                                            loop="2"
+                                                                        >{this.props.playSongData.singers}</marquee> :
+                                                                        <span>{this.props.playSongData.singers.length > 38 ?
+                                                                            this.props.playSongData.singers.substr(0, 37) + '...' :
+                                                                            this.props.playSongData.singers
+                                                                        }</span>
+                                                                }
 
-                        </div>
-                    </div>
-                    <div className={`audio-element ${this.state.isFullScreen ? 'fullscreen-audioelmnt' : ''}`}
-                        style={{
-                            background: `${this.state.isFullScreen ?
-                                this.state.colors.length ?
-                                    `linear-gradient(60deg, ${this.state.backgroundColor.split(",")[2]}, ${this.state.backgroundColor.split(",")[3]})` :
-                                    '#222' :
-                                '#222'}`,
-                            boxShadow: `0 3px 50px 1px ${this.state.backgroundColor.split(",")[2]};`
-                        }}
-                    >
-                        <input type="range"
-                            name="slider"
-                            id="range-slider"
-                            ref={this.rangeSlider}
-                            // value={this.state.currentDuration}
-                            step="any"
-                            style={{ display: `${this.state.isFullScreen ? 'block' : 'none'}` }}
-                            max={this.props.playSongData.duration}
-                            onChange={this.seek}
+                                                            </div>
+                                                        </div>
+                                                        <div className={`audio-element ${this.state.isFullScreen ? 'fullscreen-audioelmnt' : ''}`}
+                                                            style={{
+                                                                background: `${this.state.isFullScreen ?
+                                                                    !loading ?
+                                                                        `linear-gradient(60deg, ${color[3]}, ${color[1]})` :
+                                                                        '#222' :
+                                                                    '#222'}`,
+                                                                boxShadow: `0 3px 50px 1px ${data};`
+                                                            }}
+                                                        >
+                                                            <input type="range"
+                                                                name="slider"
+                                                                id="range-slider"
+                                                                ref={this.rangeSlider}
+                                                                // value={this.state.currentDuration}
+                                                                step="any"
+                                                                style={{ display: `${this.state.isFullScreen ? 'block' : 'none'}` }}
+                                                                max={this.props.playSongData.duration}
+                                                                onChange={this.seek}
 
-                        />
-                        <span id="play-pause"
-                            style={{}}
-                        >
+                                                            />
+                                                            <span id="play-pause"
+                                                                style={{}}
+                                                            >
 
-                            {
-                                this.state.isFullScreen &&
-                                <IconContext.Provider value={{
-                                    size: '2.5em',
-                                    // style: {
-                                    //     pointerEvents: `${this.props.isNextEnd && 'none'}`,
-                                    //     color: `${this.props.isNextEnd && 'grey'}`
-                                    // }
-                                }}>
-                                    <CgPlayTrackPrev onClickCapture={() => this.props.playPrevCallBack()} />
-                                </IconContext.Provider>
-                            }
-                            <IconContext.Provider value={{
-                                size: `${this.state.isFullScreen ? '2.5em' : '1.4em'}`,
-                                className: `play-pause ${this.state.isFullScreen ? 'play-pause-animate' : ''}`,
-                                style: {
-                                    display: `${this.state.isBuffering ? 'none' : 'block'}`
-                                }
-                            }}>
-                                {
-                                    this.state.isPlaying ?
-                                        <FaPause
-                                            onClick={() => this.audioRef.current.pause()}
-                                        /> :
-                                        <FaPlay
-                                            onClick={() => this.audioRef.current.play().catch(() => console.log("Error in URL"))}
-                                        />
-                                }
-                            </IconContext.Provider>
-                            <ClipLoader
-                                css={`display:flex;justify-content:center;align-items:center; display:${this.state.isBuffering ? 'block' : 'none'}`}
-                                size={35}
-                                color={"#757575"}
-                            />
-                            {
-                                this.state.isFullScreen &&
-                                <IconContext.Provider value={{
-                                    size: '2.5em',
-                                    // style: {
-                                    //     pointerEvents: `${this.props.isNextEnd && 'none'}`,
-                                    //     color: `${this.props.isNextEnd && 'grey'}`
-                                    // }
-                                }}>
-                                    <CgPlayTrackNext onClickCapture={() => this.props.playNextCallBack()} />
-                                </IconContext.Provider>
-                            }
+                                                                {
+                                                                    this.state.isFullScreen &&
+                                                                    <IconContext.Provider value={{
+                                                                        size: '2.5em',
+                                                                        // style: {
+                                                                        //     pointerEvents: `${this.props.isNextEnd && 'none'}`,
+                                                                        //     color: `${this.props.isNextEnd && 'grey'}`
+                                                                        // }
+                                                                    }}>
+                                                                        <CgPlayTrackPrev onClickCapture={() => this.props.playPrevCallBack()} />
+                                                                    </IconContext.Provider>
+                                                                }
+                                                                <IconContext.Provider value={{
+                                                                    size: `${this.state.isFullScreen ? '2.5em' : '1.4em'}`,
+                                                                    className: `play-pause ${this.state.isFullScreen ? 'play-pause-animate' : ''}`,
+                                                                    style: {
+                                                                        display: `${this.state.isBuffering ? 'none' : 'block'}`
+                                                                    }
+                                                                }}>
+                                                                    {
+                                                                        this.state.isPlaying ?
+                                                                            <FaPause
+                                                                                onClick={() => this.audioRef.current.pause()}
+                                                                            /> :
+                                                                            <FaPlay
+                                                                                onClick={() => this.audioRef.current.play().catch(() => console.log("Error in URL"))}
+                                                                            />
+                                                                    }
+                                                                </IconContext.Provider>
+                                                                <ClipLoader
+                                                                    css={`display:flex;justify-content:center;align-items:center; display:${this.state.isBuffering ? 'block' : 'none'}`}
+                                                                    size={35}
+                                                                    color={"#757575"}
+                                                                />
+                                                                {
+                                                                    this.state.isFullScreen &&
+                                                                    <IconContext.Provider value={{
+                                                                        size: '2.5em',
+                                                                        // style: {
+                                                                        //     pointerEvents: `${this.props.isNextEnd && 'none'}`,
+                                                                        //     color: `${this.props.isNextEnd && 'grey'}`
+                                                                        // }
+                                                                    }}>
+                                                                        <CgPlayTrackNext onClickCapture={() => this.props.playNextCallBack()} />
+                                                                    </IconContext.Provider>
+                                                                }
 
-                        </span>
+                                                            </span>
 
 
-                        {
-                            this.state.isFullScreen &&
-                            <Fragment>
-                                <span
-                                    ref={this.elapsedTime}
-                                    className="song-play-elapsed-time">00:00</span>
-                                <span
-                                    className="song-end-time">{this.state.totalDurationInTime}</span>
-                            </Fragment>
+                                                            {
+                                                                this.state.isFullScreen &&
+                                                                <Fragment>
+                                                                    <span
+                                                                        ref={this.elapsedTime}
+                                                                        className="song-play-elapsed-time">00:00</span>
+                                                                    <span
+                                                                        className="song-end-time">{this.state.totalDurationInTime}</span>
+                                                                </Fragment>
+                                                            }
+
+                                                            <audio
+                                                                ref={this.audioRef}
+                                                                autoPlay="autoplay"
+                                                                preload="metadata"
+                                                                src={this.props.playSongData.media_preview_url}
+                                                                onPlay={() => this.setState({ isPlaying: true })}
+                                                                onPause={() => this.setState({ isPlaying: false })}
+                                                                onError={this.audioError}
+                                                                onTimeUpdate={this.timeUpdate}
+                                                                onWaiting={() => this.setState({ isBuffering: true })}
+                                                                onPlaying={() => this.setState({ isBuffering: false })}
+                                                            ></audio>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
+                                        }
+
+                                    </Palette>
+                                </Fragment>
+                            )
                         }
+                    }
 
-                        <audio
-                            ref={this.audioRef}
-                            autoPlay="autoplay"
-                            preload="metadata"
-                            src={this.props.playSongData.media_preview_url}
-                            onPlay={() => this.setState({ isPlaying: true })}
-                            onPause={() => this.setState({ isPlaying: false })}
-                            onError={this.audioError}
-                            onTimeUpdate={this.timeUpdate}
-                            onWaiting={() => this.setState({ isBuffering: true })}
-                            onPlaying={() => this.setState({ isBuffering: false })}
-                        ></audio>
-                    </div>
-                </div>
+
+                </Color>
             </Fragment>
         )
     }

@@ -4,6 +4,7 @@ import SearchSuggestion from './search/SearchSuggestion'
 import SearchResult from './search/SearchResult'
 import '../../../statics/css/search.css'
 import axios from 'axios'
+import fetchSearchResultV2 from '../../../lib/fetchSearchResultV2'
 
 export class MainSearch extends Component {
     constructor(props) {
@@ -36,15 +37,15 @@ export class MainSearch extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.searchValue !== prevState.searchValue && this.state.searchValue !== "") {
-            axios.get("https://cors-anywhere.herokuapp.com/" + process.env.searchV2_prefix + "" + this.state.searchValue + "" + process.env.searchV2_suffix).then(resp => {
-                let data = resp.data
-                this.setState({ searchResult: data, loading: false })
+            // axios.get("https://cors-anywhere.herokuapp.com/" + process.env.searchV2_prefix + "" + this.state.searchValue + "" + process.env.searchV2_suffix).then(resp => {
+            //     let data = resp.data
+            //     this.setState({ searchResult: data, loading: false })
+            // }).catch(err => console.log(err.message));
+
+            fetchSearchResultV2(this.state.searchValue).then(resp => {
+                this.setState({ searchResult: resp, loading: false })
             }).catch(err => console.log(err.message));
-            // fetch("/api/searchv2?q=" + this.state.searchValue)
-            //     .then(resp => resp.json())
-            //     .then(resp => {
-            //         this.setState({ searchResult: resp, loading: false })
-            //     }).catch(err => console.log(err.message))
+
         }
 
         if (this.state.playSongData !== prevState.playSongData) {
