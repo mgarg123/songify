@@ -10,7 +10,6 @@ import { CgPlayTrackPrev, CgPlayTrackNext } from 'react-icons/cg'
 import axios from 'axios'
 import Hls from 'hls.js'
 import isColorDark from '../../lib/isColorDark'
-import { ColorExtractor } from 'react-color-extractor'
 import Color, { Palette } from 'color-thief-react'
 
 //Dynamic import and turning off server side import so that we do not get 'window is not defined' error!
