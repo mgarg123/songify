@@ -1,7 +1,5 @@
 import Cors from 'cors'
 import initMiddleware from '../../lib/init-middleware'
-import crypto from 'crypto'
-import base64 from 'base-64'
 import unescape from 'lodash.unescape'
 
 const cors = initMiddleware(

@@ -4,8 +4,6 @@ import { IconContext } from 'react-icons'
 import { AiFillHeart } from 'react-icons/ai'
 import { FiPlay, FiArrowLeft } from 'react-icons/fi'
 import AlbumList from './AlbumList'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export class DetailsPage extends Component {
     constructor(props) {
