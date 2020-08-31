@@ -7,10 +7,12 @@ import ClipLoader from 'react-spinners/ClipLoader'
 import durationToTime from '../../lib/durationToTime.js'
 import dynamic from 'next/dynamic'
 import { CgPlayTrackPrev, CgPlayTrackNext } from 'react-icons/cg'
-import axios from 'axios'
+import { MdShuffle, MdRepeat, MdRepeatOne } from 'react-icons/md'
+// import axios from 'axios'
 import Hls from 'hls.js'
 import isColorDark from '../../lib/isColorDark'
 import Color, { Palette } from 'color-thief-react'
+import fetchSearchResult from '../../lib/fetchSearchResult'
 
 //Dynamic import and turning off server side import so that we do not get 'window is not defined' error!
 const MediaSession = dynamic(() => {
@@ -32,7 +34,9 @@ export class Player extends Component {
             totalDurationInTime: "00:00",
             currentElapsedTime: '00:00',
             playSongData: {},
-            queueNo: 0
+            queueNo: 0,
+            repeat: "no",      //"no" -No repeat, -> "all" -repeat all -> "one" -repeat one
+            isShuffled: false
         }
         this.audioRef = React.createRef()
         this.rangeSlider = React.createRef()
@@ -51,7 +55,12 @@ export class Player extends Component {
         this.setState({ totalDurationInTime: totalTime })
         if (this.audioRef.current) {
             this.audioRef.current.addEventListener('ended', () => {
-                this.props.playNextCallBack()
+                if (this.state.repeat === 'one') {
+                    this.audioRef.current.play().catch(err => console.log("Play Error - OnEnd"))
+                } else {
+                    this.props.playNextCallBack(this.state.repeat, this.state.isShuffled)
+                }
+
             });
         }
 
@@ -71,8 +80,7 @@ export class Player extends Component {
             //Fetch HIGH Quality song from other API
             let song = this.props.playSongData.song
             let singer = this.props.playSongData.singers.split(",")[0]
-            axios.get('/api/search?q=' + song + "+" + singer).then(resp => {
-                let data = resp.data.result.data["Best Match"]
+            fetchSearchResult(song, singer).then(data => {
                 let songId = ""
                 if (data.length) {
                     songId = data[0].id
@@ -113,8 +121,12 @@ export class Player extends Component {
                     this.audioRef.current.src = url
                     this.audioRef.current.play().catch(() => console.log("Error in URL"));
                 }
+            }).catch(err => console.log(err.message))
+            // axios.get('/api/search?q=' + song + "+" + singer).then(resp => {
+            //     let data = resp.data.result.data["Best Match"]
 
-            }).catch(err => console.log(err.message));
+
+            // }).catch(err => console.log(err.message));
         }
 
         if (this.audioRef.current.src.match('m3u8') !== null) {
@@ -319,6 +331,22 @@ export class Player extends Component {
                                                             <span id="play-pause"
                                                                 style={{}}
                                                             >
+                                                                {
+                                                                    this.state.isFullScreen &&
+                                                                    <IconContext.Provider value={{
+                                                                        size: '2em',
+                                                                        color: `${this.state.isShuffled ? '#0be2e2' : '#fff'}`,
+                                                                        style: {
+                                                                            position: 'absolute',
+                                                                            bottom: '10px',
+                                                                            left: '10px'
+                                                                        }
+                                                                    }}>
+                                                                        <MdShuffle onClick={() => this.setState(
+                                                                            (prevState) => ({ isShuffled: !prevState.isShuffled })
+                                                                        )} />
+                                                                    </IconContext.Provider>
+                                                                }
 
                                                                 {
                                                                     this.state.isFullScreen &&
@@ -329,7 +357,8 @@ export class Player extends Component {
                                                                         //     color: `${this.props.isNextEnd && 'grey'}`
                                                                         // }
                                                                     }}>
-                                                                        <CgPlayTrackPrev onClickCapture={() => this.props.playPrevCallBack()} />
+                                                                        <CgPlayTrackPrev
+                                                                            onClickCapture={() => this.props.playPrevCallBack()} />
                                                                     </IconContext.Provider>
                                                                 }
                                                                 <IconContext.Provider value={{
@@ -363,9 +392,35 @@ export class Player extends Component {
                                                                         //     color: `${this.props.isNextEnd && 'grey'}`
                                                                         // }
                                                                     }}>
-                                                                        <CgPlayTrackNext onClickCapture={() => this.props.playNextCallBack()} />
+                                                                        <CgPlayTrackNext
+                                                                            onClickCapture={() => this.props.playNextCallBack(this.state.repeat, this.state.isShuffled)} />
                                                                     </IconContext.Provider>
                                                                 }
+                                                                {
+                                                                    this.state.isFullScreen &&
+                                                                    <IconContext.Provider value={{
+                                                                        size: '2em',
+                                                                        color: `${this.state.repeat === "all" ? '#0be2e2' : '#fff'}`,
+                                                                        style: {
+                                                                            position: 'absolute',
+                                                                            bottom: '10px',
+                                                                            right: '10px'
+                                                                        }
+                                                                    }}>
+                                                                        {
+                                                                            this.state.repeat === "one" ?
+                                                                                <MdRepeatOne onClick={() => this.setState({ repeat: "no" })} /> :
+                                                                                <MdRepeat onClick={() => this.setState(
+                                                                                    (prevState) => this.setState({
+                                                                                        repeat: `${prevState.repeat === "no" ? 'all' :
+                                                                                            prevState.repeat === "all" ? 'one' : "no"}`
+                                                                                    })
+                                                                                )} />
+                                                                        }
+
+                                                                    </IconContext.Provider>
+                                                                }
+
 
                                                             </span>
 

@@ -11,7 +11,7 @@ export class SearchSuggestion extends Component {
             suggestions: [],
             showSuggestion: [],
             playSongData: {},
-            albumData:{}
+            albumData: {}
         }
     }
 
@@ -41,18 +41,28 @@ export class SearchSuggestion extends Component {
         localStorage.setItem('songify_search_history', JSON.stringify(suggestion))
 
         let showData = []
-        if (suggestion.length > 4) {
-            showData = suggestion.filter((data, index) => index < 4)
-            this.setState({ showSuggestion: showData })
+        if (this.state.seeAll) {
+            if (suggestion.length > 4) {
+                // showData = suggestion.filter((data, index) => index < 4)
+                this.setState({ showSuggestion: suggestion })
+            } else {
+                this.setState({ showSuggestion: suggestion, seeAll: false })
+            }
         } else {
-            this.setState({ showSuggestion: suggestion })
+            if (suggestion.length > 4) {
+                showData = suggestion.filter((data, index) => index < 4)
+                this.setState({ showSuggestion: showData })
+            } else {
+                this.setState({ showSuggestion: suggestion, })
+            }
         }
+
 
         this.setState({ suggestions: suggestion })
     }
 
     albumClickedCallBack = (albumData) => {
-        this.setState({albumData:albumData})
+        this.setState({ albumData: albumData })
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -98,7 +108,7 @@ export class SearchSuggestion extends Component {
                                 return (
                                     <RecentSearchList
                                         playSongCallBack={this.playSongCallBack}
-                                        albumClickedCallBack = {this.albumClickedCallBack}
+                                        albumClickedCallBack={this.albumClickedCallBack}
                                         key={data.id}
                                         type={data.type}
                                         imgId={data.image.replace("-150x150.jpg", "-350x350.jpg")}

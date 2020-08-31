@@ -9,10 +9,10 @@ const cors = initMiddleware(
 
 async function handler(req, res) {
     await cors(req, res)
-    const id: String = req.query.id
-    const count: Number = req.query.count ? parseInt(req.query.count) : -1
-    const resp: any = await fetch(process.env.playlists + "" + req.query.id)
-    const data: any = await resp.json()
+    const id = req.query.id
+    const count = req.query.count ? parseInt(req.query.count) : -1
+    const resp = await fetch(process.env.playlists + "" + req.query.id)
+    const data = await resp.json()
 
     const listOfSongs = data.result.data.list
     const newListOfSongs = {

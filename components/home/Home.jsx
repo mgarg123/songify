@@ -52,14 +52,46 @@ export class Home extends Component {
         this.setState({ isAlbumClicked: isAlbumClicked })
     }
 
-    playNextCallBack = () => {
-        if (this.state.songsQueue.length && (this.state.queueNo < this.state.songsQueue.length - 1)) {
-            let playData = this.state.songsQueue[this.state.queueNo + 1]
-            this.setState((prevState) => ({
-                playSongData: playData,
-                queueNo: prevState.queueNo + 1
-            }))
+    playNextCallBack = (repeat, isShuffled) => {
+
+        if (this.state.songsQueue.length) {
+            if (!isShuffled) {
+                if (repeat === "all") {
+                    if (this.state.queueNo === this.state.songsQueue.length - 1) {
+                        let playData = this.state.songsQueue[0]
+                        this.setState({
+                            playSongData: playData,
+                            queueNo: 0
+                        })
+                    } else {
+                        let playData = this.state.songsQueue[this.state.queueNo + 1]
+                        this.setState((prevState) => ({
+                            playSongData: playData,
+                            queueNo: prevState.queueNo + 1
+                        }))
+                    }
+                } else {
+                    if (this.state.songsQueue.length && (this.state.queueNo < this.state.songsQueue.length - 1)) {
+                        let playData = this.state.songsQueue[this.state.queueNo + 1]
+                        this.setState((prevState) => ({
+                            playSongData: playData,
+                            queueNo: prevState.queueNo + 1
+                        }))
+                    }
+                }
+            } else {
+                let randomNo = Math.floor(Math.random() * this.state.songsQueue.length)
+                let playData = this.state.songsQueue[randomNo]
+                this.setState({
+                    playSongData: playData,
+                    queueNo: randomNo
+                })
+            }
+
         }
+
+
+
         // if (this.state.queueNo === 0 && this.state.songsQueue.length > 0) {
         //     this.setState({ isPrevEnd: true, isNextEnd: false })
         // }

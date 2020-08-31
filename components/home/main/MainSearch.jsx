@@ -37,11 +37,6 @@ export class MainSearch extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.searchValue !== prevState.searchValue && this.state.searchValue !== "") {
-            // axios.get("https://cors-anywhere.herokuapp.com/" + process.env.searchV2_prefix + "" + this.state.searchValue + "" + process.env.searchV2_suffix).then(resp => {
-            //     let data = resp.data
-            //     this.setState({ searchResult: data, loading: false })
-            // }).catch(err => console.log(err.message));
-
             fetchSearchResultV2(this.state.searchValue).then(resp => {
                 this.setState({ searchResult: resp, loading: false })
             }).catch(err => console.log(err.message));

@@ -79,6 +79,7 @@
     z-index: 9999;
     flex-direction: column;
     animation: animate-up 0.3s ease-in-out;
+    transition: background 0.5s ease-in-out;
 }
 
 @keyframes animate-up {
@@ -158,6 +159,7 @@
     position: relative;
     box-shadow: 0 3px 50px 1px rgba(0, 0, 0, .9);
     animation: animate-audioelmnt 0.45s ease-in-out;
+    transition: background 0.5s ease-in-out;
 }
 
 .play-pause-animate {

@@ -61,15 +61,16 @@ export class Menu extends Component {
                                 </IconContext.Provider>
                                 <span>{this.props.optionsArray[0]}</span>
                             </li>
-                            <li>
+                            <li onClick={() => this.props.clickHandleCallBack(
+                                this.props.optionsArray[1] === 'Details' ? 'details' : 'queue')}>
 
                                 <IconContext.Provider value={{
                                     size: '1.2em',
                                 }}>
                                     {
                                         this.props.optionsArray[1] === 'Details' ?
-                                            <FaInfoCircle onClickCapture={this.props.clickHandleCallBack("details")} /> :
-                                            <MdQueueMusic onClickCapture={this.props.clickHandleCallBack("queue")} />
+                                            <FaInfoCircle /> :
+                                            <MdQueueMusic />
                                     }
 
                                 </IconContext.Provider>
