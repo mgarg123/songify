@@ -37,6 +37,7 @@ export class MainSearch extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.searchValue !== prevState.searchValue && this.state.searchValue !== "") {
+
             fetchSearchResultV2(this.state.searchValue).then(resp => {
                 this.setState({ searchResult: resp, loading: false })
             }).catch(err => console.log(err.message));
@@ -61,11 +62,14 @@ export class MainSearch extends Component {
                             <SearchSuggestion
                                 playSongCallBack={this.playSongCallBack}
                                 albumClickedCallBack={this.albumClickedCallBack}
+                                playSongData={this.props.playSongData}
                             /> :
                             <SearchResult
                                 playSongCallBack={this.playSongCallBack}
                                 albumClickedCallBack={this.albumClickedCallBack}
-                                result={this.state.searchResult} />
+                                result={this.state.searchResult}
+                                playSongData={this.props.playSongData}
+                            />
 
                     }
 

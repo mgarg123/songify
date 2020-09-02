@@ -1,0 +1,92 @@
+.library-root {
+    background: #29282b;
+    color: #fff;
+    width: 100%;
+    height: 100vh;
+    /* font-family: sans-serif; */
+}
+
+.lib-cont {
+    width: 94%;
+    /* border: 1px solid red; */
+    margin: 0 auto;
+}
+
+.lib-cont .title {
+    padding: 10px 0px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+
+/* .title h1 {
+    padding-left: 10px;
+} */
+
+.lib-options {
+    /* padding: 5px 0px; */
+}
+
+.lib-options .lib-option {
+    padding: 15px 0px;
+    border: 0.5px solid grey;
+    border-radius: 15px;
+    background: #2c2b2e;
+    margin: 5px 0px;
+    font-size: 1.4em;
+    /* box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.6); */
+    display: flex;
+    align-items: center;
+}
+
+.lib-option .opt-icon-1 {
+    width: 10%;
+}
+
+.lib-option #opt-title {
+    /* border: 1px solid red; */
+    width: 70%;
+    padding-left: 5px;
+}
+
+.lib-option #opt-count {
+    width: 10%;
+    font-size: 0.7em;
+    color: #757575;
+    text-align: center;
+}
+
+.lib-option .opt-icon-2 {
+    width: 10%;
+    font-size: 0.9em;
+    color: #757575;
+}
+
+
+/* LIB details CSS starts  */
+
+.lib-details {}
+
+.lib-search {
+    text-align: center;
+    /* padding-bottom: 20px; */
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.lib-search input {
+    width: 98%;
+    /* margin: 0 auto; */
+    padding-left: 35px;
+    font-weight: 600;
+    font-size: medium;
+    height: 36px;
+    letter-spacing: 0.5px;
+    outline: none;
+    border: none;
+    border-radius: 30px;
+}
+
+
+/* LIB details CSS Ends  */

@@ -8,6 +8,7 @@ import durationToTime from '../../lib/durationToTime.js'
 import dynamic from 'next/dynamic'
 import { CgPlayTrackPrev, CgPlayTrackNext } from 'react-icons/cg'
 import { MdShuffle, MdRepeat, MdRepeatOne } from 'react-icons/md'
+import { AiFillHeart } from 'react-icons/ai'
 // import axios from 'axios'
 import Hls from 'hls.js'
 import isColorDark from '../../lib/isColorDark'
@@ -314,7 +315,7 @@ export class Player extends Component {
                                                                         `linear-gradient(60deg, ${color[3]}, ${color[1]})` :
                                                                         '#222' :
                                                                     '#222'}`,
-                                                                boxShadow: `0 3px 50px 1px ${data};`
+                                                                boxShadow: `0 3px 50px 1px ${data}`
                                                             }}
                                                         >
                                                             <input type="range"
@@ -361,6 +362,7 @@ export class Player extends Component {
                                                                             onClickCapture={() => this.props.playPrevCallBack()} />
                                                                     </IconContext.Provider>
                                                                 }
+
                                                                 <IconContext.Provider value={{
                                                                     size: `${this.state.isFullScreen ? '2.5em' : '1.4em'}`,
                                                                     className: `play-pause ${this.state.isFullScreen ? 'play-pause-animate' : ''}`,
@@ -394,6 +396,20 @@ export class Player extends Component {
                                                                     }}>
                                                                         <CgPlayTrackNext
                                                                             onClickCapture={() => this.props.playNextCallBack(this.state.repeat, this.state.isShuffled)} />
+                                                                    </IconContext.Provider>
+                                                                }
+                                                                {
+                                                                    this.state.isFullScreen &&
+                                                                    <IconContext.Provider value={{
+                                                                        className: 'heart',
+                                                                        size: '2em',
+                                                                        style: {
+                                                                            position: 'absolute',
+                                                                            bottom: '10px',
+                                                                            left: '52px'
+                                                                        }
+                                                                    }}>
+                                                                        <AiFillHeart />
                                                                     </IconContext.Provider>
                                                                 }
                                                                 {

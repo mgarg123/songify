@@ -55,6 +55,7 @@ export class SearchResult extends Component {
                                         hasMoreOptions={true}
                                         searchTitle={data.title}
                                         playSongCallBack={this.playSongCallBack}
+                                        playSongData={this.props.playSongData}
                                     />
                                 )
                             })
@@ -81,6 +82,7 @@ export class SearchResult extends Component {
                                         hasMoreOptions={true}
                                         searchTitle={data.title}
                                         playSongCallBack={this.playSongCallBack}
+                                        playSongData={this.props.playSongData}
                                     />
                                 )
                             })

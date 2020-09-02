@@ -3,7 +3,9 @@ import { RiCloseFill } from 'react-icons/ri'
 import { MdMoreVert } from 'react-icons/md'
 import { IconContext } from "react-icons"
 import Menu from '../../menu/Menu'
-import axios from 'axios'
+import getSongDetailsV2 from '../../../../lib/getSongDetailsV2'
+import getAlbumV2 from '../../../../lib/getAlbumV2'
+// import {CurrentPlayingCon} from '../../../context/currentPlayingContext'
 
 export class RecentSearchList extends Component {
     constructor(props) {
@@ -43,34 +45,52 @@ export class RecentSearchList extends Component {
         }
 
         if (this.props.type !== undefined && this.props.type === "song") {
-            fetch("/api/songDetailsV2?id=" + this.props.songId)
-                .then(response => response.json())
-                .then(resp => {
-                    let data = resp[this.props.songId]
-                    let mediaURL = data.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
-                    data.media_preview_url = mediaURL
 
-                    if (type === "details") {
-                        let albumData = {
-                            title: data.song,
-                            name: data.song,
-                            year: data.year,
-                            image: data.image,
-                            primary_artists: data.primary_artists,
-                            play_count: data.play_count,
-                            songs: [data]
-                        }
-                        this.setState({ albumData: albumData, isAlbumClicked: true })
+            getSongDetailsV2(this.props.songId).then(data => {
+                let mediaURL = data.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
+                data.media_preview_url = mediaURL
+
+                if (type === "details") {
+                    let albumData = {
+                        title: data.song,
+                        name: data.song,
+                        year: data.year,
+                        image: data.image,
+                        primary_artists: data.primary_artists,
+                        play_count: data.play_count,
+                        songs: [data]
+                    }
+                    this.setState({ albumData: albumData, isAlbumClicked: true })
+                } else {
+
+                    this.setState({ playSongData: data })
+                }
+            }).catch(err => console.log(err.message))
+        } else if (this.props.type === "album") {
+
+            getAlbumV2(this.props.songId).then(data => {
+                if (type === "play") {
+                    let songToPlay = data.songs[0]
+                    let songsQueue = datat.songs.length > 1 && data.songs.map((x, index) => index > 0 && x)
+                    songToPlay.media_preview_url = songToPlay.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
+                    // console.log(songToPlay);
+                    if (data.songs.length > 1) {
+                        this.props.playSongCallBack(songToPlay, songsQueue)
                     } else {
-                        this.setState({ playSongData: data })
+                        this.props.playSongCallBack(songToPlay)
                     }
 
-                }).catch(err => console.log(err.message));
-        } else if (this.props.type === "album") {
-            axios.get('/api/albumV2?id=' + this.props.songId).then(res => {
-                let data = res.data
-                this.setState({ albumData: data, isAlbumClicked: true })
-            }).catch(err => console.log(err.message))
+                    // this.setState({ playSongData: songToPlay })
+                } else {
+                    this.setState({ albumData: data, isAlbumClicked: true })
+                }
+            }).catch(err => console.log(err.message));
+
+
+
+
+
+
         }
     }
 
@@ -116,7 +136,7 @@ export class RecentSearchList extends Component {
                     <div className="sugg-details">
                         <span id="sugg-title"
                             onClick={this.clickHandle}
-                            style={{ color: `${this.props.songId === this.state.playSongData.id ? 'rgb(11, 226, 226)' : '#fff'}` }}
+                            style={{ color: `${this.props.playSongData && this.props.playSongData.id === this.props.songId ? 'rgb(11, 226, 226)' : '#fff'}` }}
                             dangerouslySetInnerHTML={{
                                 __html: `${this.props.searchTitle.length > 28 ?
                                     this.props.searchTitle.substr(0, 26) + "..." :
@@ -174,6 +194,7 @@ export class RecentSearchList extends Component {
         )
     }
 }
+
 
 
 export default RecentSearchList

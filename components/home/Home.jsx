@@ -11,6 +11,7 @@ import DetailsPage from './DetailsPage'
 import '../../statics/css/index.css'
 import { Provider } from 'react-redux'
 import store from '../redux/store'
+import { CurrentPlayingProvider } from '../context/currentPlayingContext'
 
 
 
@@ -132,38 +133,41 @@ export class Home extends Component {
         return (
             <Fragment>
                 <Provider store={store}>
-                    <Header visible={this.state.whichTab === "search" ? false : true} />
-                    {
-                        this.state.whichTab === "home" ? <MainHome /> :
-                            this.state.whichTab === 'search' ?
-                                this.state.isAlbumClicked ?
-                                    <DetailsPage
-                                        albumClickedCallBack={this.closeAlbumCallBack}
-                                        songQueueCallBack={this.songQueueCallBack}
-                                        playSongCallBack={this.playSongCallBack}
-                                        songsQueueMain={this.state.songsQueue}
-                                        albumData={this.state.albumData}
-                                    /> :
-                                    <MainSearch
-                                        playSongCallBack={this.playSongCallBack}
-                                        albumClickedCallBack={this.albumClickedCallBack}
-                                    />
+                    <CurrentPlayingProvider playSongData={this.state.playSongData}>
+                        <Header visible={this.state.whichTab === "search" || this.state.whichTab === "library" ? false : true} />
+                        {
+                            this.state.whichTab === "home" ? <MainHome /> :
+                                this.state.whichTab === 'search' ?
+                                    this.state.isAlbumClicked ?
+                                        <DetailsPage
+                                            albumClickedCallBack={this.closeAlbumCallBack}
+                                            songQueueCallBack={this.songQueueCallBack}
+                                            playSongCallBack={this.playSongCallBack}
+                                            songsQueueMain={this.state.songsQueue}
+                                            albumData={this.state.albumData}
+                                        /> :
+                                        <MainSearch
+                                            playSongCallBack={this.playSongCallBack}
+                                            albumClickedCallBack={this.albumClickedCallBack}
+                                            playSongData={this.state.playSongData}
+                                        />
 
-                                : this.state.whichTab === "library" ? <MainLib /> :
-                                    <MainAccount />
-                    }
-                    {
-                        Object.keys(this.state.playSongData).length !== 0 &&
-                        <Player visible={true}
-                            playSongData={this.state.playSongData}
-                            playNextCallBack={this.playNextCallBack}
-                            playPrevCallBack={this.playPrevCallBack}
-                            isPrevEnd={this.state.isPrevEnd}
-                            isNextEnd={this.state.isNextEnd}
-                            songsQueue={this.state.songsQueue}
-                        />
-                    }
-                    <Footer tabsCallBack={this.tabsCallBack} />
+                                    : this.state.whichTab === "library" ? <MainLib /> :
+                                        <MainAccount />
+                        }
+                        {
+                            Object.keys(this.state.playSongData).length !== 0 &&
+                            <Player visible={true}
+                                playSongData={this.state.playSongData}
+                                playNextCallBack={this.playNextCallBack}
+                                playPrevCallBack={this.playPrevCallBack}
+                                isPrevEnd={this.state.isPrevEnd}
+                                isNextEnd={this.state.isNextEnd}
+                                songsQueue={this.state.songsQueue}
+                            />
+                        }
+                        <Footer tabsCallBack={this.tabsCallBack} />
+                    </CurrentPlayingProvider>
                 </Provider>
             </Fragment>
         )

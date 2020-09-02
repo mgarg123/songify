@@ -117,6 +117,7 @@ export class SearchSuggestion extends Component {
                                         isRemovable={true}
                                         searchTitle={data.title}
                                         removeCallBack={this.removeCallBack}
+                                        playSongData={this.props.playSongData}
                                     />
                                 )
                             })
