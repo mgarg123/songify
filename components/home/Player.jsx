@@ -37,7 +37,8 @@ export class Player extends Component {
             playSongData: {},
             queueNo: 0,
             repeat: "no",      //"no" -No repeat, -> "all" -repeat all -> "one" -repeat one
-            isShuffled: false
+            isShuffled: false,
+            isPresentInLib: false
         }
         this.audioRef = React.createRef()
         this.rangeSlider = React.createRef()
@@ -65,6 +66,11 @@ export class Player extends Component {
             });
         }
 
+        let localLib = JSON.parse(localStorage.getItem("songify_library"))
+        let isPresent = localLib ? localLib.find(x => x.id === this.props.playSongData.id) !== undefined : false
+        this.setState({
+            isPresentInLib: isPresent
+        })
 
 
     }
@@ -166,10 +172,30 @@ export class Player extends Component {
         // this.setState({ currentDuration: event.target.value })
     }
 
-    // onSongEnd = (event) => {
-    //     alert("end")
-    //     this.props.playNextCallBack()
-    // }
+    addToLib = () => {
+        let localLib = JSON.parse(localStorage.getItem("songify_library"))
+        let isAdded = false
+
+        if (localLib) {
+            let isPresent = localLib.find(x => x.id === this.props.playSongData.id) !== undefined
+            if (!isPresent) {
+                localLib.push(this.props.playSongData)
+                isAdded = true
+            } else {
+                localLib = localLib.filter(x => x.id !== this.props.playSongData.id)
+                isAdded = false
+            }
+        } else {
+            localLib = []
+            localLib.push(this.props.playSongData)
+            isAdded = true
+        }
+
+        localStorage.setItem("songify_library", JSON.stringify(localLib))
+        this.setState({
+            isPresentInLib: isAdded
+        })
+    }
 
 
     componentDidUpdate(prevProps, prevState) {
@@ -179,7 +205,16 @@ export class Player extends Component {
 
                 //Set total duration of next song as didMount won't be called again
                 let totalDuration = durationToTime(this.props.playSongData.duration)
-                this.setState({ totalDurationInTime: totalDuration })
+
+                console.log("Song Changed");
+                let localLib = JSON.parse(localStorage.getItem("songify_library"))
+                let isPresent = localLib ? localLib.find(x => x.id === this.props.playSongData.id) !== undefined : false
+
+                this.setState({
+                    totalDurationInTime: totalDuration,
+                    playSongData: this.props.playSongData,
+                    isPresentInLib: isPresent
+                })
             }
         }
         if (this.state.isFullScreen !== prevState.isFullScreen) {
@@ -191,11 +226,11 @@ export class Player extends Component {
 
         }
 
-        if (this.props.playSongData !== prevProps.playSongData)
-            this.setState({ playSongData: this.props.playSongData })
+
     }
 
     render() {
+
         return (
             <Fragment>
 
@@ -403,13 +438,14 @@ export class Player extends Component {
                                                                     <IconContext.Provider value={{
                                                                         className: 'heart',
                                                                         size: '2em',
+                                                                        color: this.state.isPresentInLib ? 'red' : 'white',
                                                                         style: {
                                                                             position: 'absolute',
                                                                             bottom: '10px',
                                                                             left: '52px'
                                                                         }
                                                                     }}>
-                                                                        <AiFillHeart />
+                                                                        <AiFillHeart onClick={this.addToLib} />
                                                                     </IconContext.Provider>
                                                                 }
                                                                 {

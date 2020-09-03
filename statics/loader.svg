@@ -1,0 +1,11 @@
+<svg viewBox="0 0 226 200">
+        <defs>
+          <linearGradient x1="114.720775%" y1="181.283245%" x2="39.5399306%" y2="100%" id="linear-gradient">
+            <stop stop-color="#000000" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+          </linearGradient>
+        </defs>
+        <g id="icon-group" fill="none" stroke="url(#linear-gradient)" stroke-width="18">
+          <path d="M113,5.08219117 L4.28393801,197.5 L221.716062,197.5 L113,5.08219117 Z"></path>
+        </g>
+      </svg>

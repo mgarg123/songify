@@ -14,13 +14,20 @@ export class DetailsPage extends Component {
             playSongData: {},
             songsQueue: [],
             displayAdded: false,
-            addedQuantity: 0
+            addedQuantity: 0,
+            isPresentInLib: false
         }
     }
 
     componentDidMount() {
         //To scroll to top always when component mounts
         window.scrollTo(0, 0)
+
+        let localLib = JSON.parse(localStorage.getItem("songify_library"))
+        let isPresent = localLib ? localLib.find(x => x.id === this.props.albumData.id) !== undefined : false
+        this.setState({
+            isPresentInLib: isPresent
+        })
     }
 
     addAllSongsToQueue = () => {
@@ -60,6 +67,31 @@ export class DetailsPage extends Component {
 
     playSongCallBack = (data) => {
         this.setState({ playSongData: data })
+    }
+
+    addToLib = () => {
+        let localLib = JSON.parse(localStorage.getItem("songify_library"))
+        let isAdded = false
+
+        if (localLib) {
+            let isPresent = localLib.find(x => x.id === this.props.albumData.id) !== undefined
+            if (!isPresent) {
+                localLib.push(this.props.albumData)
+                isAdded = true
+            } else {
+                localLib = localLib.filter(x => x.id !== this.props.albumData.id)
+                isAdded = false
+            }
+        } else {
+            localLib = []
+            localLib.push(this.props.albumData)
+            isAdded = true
+        }
+
+        localStorage.setItem("songify_library", JSON.stringify(localLib))
+        this.setState({
+            isPresentInLib: isAdded
+        })
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -119,6 +151,7 @@ export class DetailsPage extends Component {
                             <IconContext.Provider value={{
                                 className: 'heart',
                                 size: '2.7em',
+                                color: this.state.isPresentInLib ? 'red' : 'white',
                                 style: {
                                     border: '0.5px solid grey',
                                     borderRadius: '50px',
@@ -126,7 +159,7 @@ export class DetailsPage extends Component {
                                     margin: '6px'
                                 }
                             }}>
-                                <AiFillHeart />
+                                <AiFillHeart onClick={this.addToLib} />
                             </IconContext.Provider>
                             <IconContext.Provider value={{
                                 className: 'playAll',
