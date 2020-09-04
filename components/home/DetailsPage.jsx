@@ -24,7 +24,7 @@ export class DetailsPage extends Component {
         window.scrollTo(0, 0)
 
         let localLib = JSON.parse(localStorage.getItem("songify_library"))
-        let isPresent = localLib ? localLib.find(x => x.id === this.props.albumData.id) !== undefined : false
+        let isPresent = localLib ? localLib.find(x => x.albumid === this.props.albumData.albumid) !== undefined : false
         this.setState({
             isPresentInLib: isPresent
         })
@@ -74,12 +74,12 @@ export class DetailsPage extends Component {
         let isAdded = false
 
         if (localLib) {
-            let isPresent = localLib.find(x => x.id === this.props.albumData.id) !== undefined
+            let isPresent = localLib.find(x => x.albumid === this.props.albumData.albumid) !== undefined
             if (!isPresent) {
                 localLib.push(this.props.albumData)
                 isAdded = true
             } else {
-                localLib = localLib.filter(x => x.id !== this.props.albumData.id)
+                localLib = localLib.filter(x => x.albumid !== this.props.albumData.albumid)
                 isAdded = false
             }
         } else {

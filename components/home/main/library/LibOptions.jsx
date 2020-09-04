@@ -16,10 +16,10 @@ export class LibOptions extends Component {
     render() {
         return (
             <div className="lib-options">
-                <LibOption title={"Songs"} count={100} whichOptionCallBack={this.whichOptionCallBack} />
-                <LibOption title={"Albums"} count={20} whichOptionCallBack={this.whichOptionCallBack} />
-                <LibOption title={"Artists"} count={13} whichOptionCallBack={this.whichOptionCallBack} />
-                <LibOption title={"Playlists"} count={0} whichOptionCallBack={this.whichOptionCallBack} />
+                <LibOption title={"Songs"} count={this.props.count.song} whichOptionCallBack={this.whichOptionCallBack} />
+                <LibOption title={"Albums"} count={this.props.count.album} whichOptionCallBack={this.whichOptionCallBack} />
+                <LibOption title={"Artists"} count={this.props.count.artist} whichOptionCallBack={this.whichOptionCallBack} />
+                <LibOption title={"Playlists"} count={this.props.count.playlist} whichOptionCallBack={this.whichOptionCallBack} />
             </div>
         )
     }

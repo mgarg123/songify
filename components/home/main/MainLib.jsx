@@ -4,6 +4,7 @@ import LibDetails from './library/LibDetails'
 import LibOptions from './library/LibOptions'
 import { FiArrowLeft } from 'react-icons/fi'
 import { IconContext } from 'react-icons'
+import getAllSongs from '../../../lib/musicLib/getAllSongs'
 
 export class MainLib extends Component {
     constructor(props) {
@@ -11,8 +12,39 @@ export class MainLib extends Component {
 
         this.state = {
             whichOption: "",
-            showDetailsPage: false
+            showDetailsPage: false,
+            lists: [],
+            playSongData: {},
+            albumData: {},
+            count: {
+                song: 0,
+                album: 0,
+                artist: 0,
+                playlist: 0
+            }
         }
+    }
+
+    componentDidMount() {
+        let songs = getAllSongs()
+        let count = {
+            song: songs.length,
+            album: 0,
+            artist: 0,
+            playlist: 0
+        }
+        this.setState({
+            lists: songs,
+            count: count
+        })
+    }
+
+    playSongCallBack = (data) => {
+        this.setState({ playSongData: data })
+    }
+
+    albumClickedCallBack = (albumData) => {
+        this.setState({ albumData: albumData })
     }
 
     whichOptionCallBack = (option) => {
@@ -22,9 +54,20 @@ export class MainLib extends Component {
         })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.playSongData !== prevState.playSongData) {
+            this.props.playSongCallBack(this.state.playSongData)
+        }
+
+    }
+
     render() {
         return (
-            <div class="library-root">
+            <div className="library-root"
+                style={{
+                    height: `${!this.state.showDetailsPage ? '100vh' :
+                        this.state.lists.length < 7 ? '100vh' : 'auto'}`
+                }}>
                 <div className="lib-cont">
                     <div className="title">
                         {
@@ -57,13 +100,18 @@ export class MainLib extends Component {
                     </div>
                     {
                         !this.state.showDetailsPage &&
-                        <LibOptions whichOptionCallBack={this.whichOptionCallBack} />
+                        <LibOptions count={this.state.count} whichOptionCallBack={this.whichOptionCallBack} />
                     }
 
                     {
                         this.state.showDetailsPage ?
                             this.state.whichOption === "Songs" ?
-                                <LibDetails type={"Song"} /> :
+                                <LibDetails
+                                    type={"Song"}
+                                    lists={this.state.lists}
+                                    playSongCallBack={this.playSongCallBack}
+                                    playSongData={this.props.playSongData}
+                                /> :
                                 this.state.whichOption === "Albums" ?
                                     <LibDetails type={"Albums"} /> :
                                     this.state.whichOption === "Artists" ?

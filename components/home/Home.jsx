@@ -152,7 +152,10 @@ export class Home extends Component {
                                             playSongData={this.state.playSongData}
                                         />
 
-                                    : this.state.whichTab === "library" ? <MainLib /> :
+                                    : this.state.whichTab === "library" ?
+                                        <MainLib
+                                            playSongCallBack={this.playSongCallBack}
+                                            playSongData={this.state.playSongData} /> :
                                         <MainAccount />
                         }
                         {

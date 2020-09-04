@@ -8,8 +8,43 @@ export class LibDetails extends Component {
         super(props)
 
         this.state = {
-            searchVal: ""
+            searchVal: "",
+            lists: [],
+            playSongData: {},
+            albumData: {}
         }
+    }
+
+    componentDidMount() {
+        this.setState({ lists: this.props.lists })
+    }
+
+    playSongCallBack = (data) => {
+        this.setState({ playSongData: data })
+    }
+
+    albumClickedCallBack = (albumData) => {
+        this.setState({ albumData: albumData })
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.lists !== prevProps.lists) {
+            this.setState({ lists: this.props.lists })
+        }
+
+        if (this.state.searchVal !== prevState.searchVal) {
+            if (this.props.type === "Song") {
+                let newList = this.props.lists.filter(x => x.song.toLowerCase().includes(this.state.searchVal.toLowerCase()))
+                this.setState({ lists: newList })
+            }
+        }
+
+        if (this.state.playSongData !== prevState.playSongData) {
+            this.props.playSongCallBack(this.state.playSongData)
+        }
+
+        if (this.state.albumData !== prevState.albumData)
+            this.props.albumClickedCallBack(this.state.albumData)
     }
 
     render() {
@@ -36,42 +71,26 @@ export class LibDetails extends Component {
                 </div>
                 <div className="lib-reuslts">
 
-                    <RecentSearchList
-                        key={"P4H0mL2F"}
-                        imgId={"https://c.saavncdn.com/996/Titoo-Mba-Hindi-2018-20180517-50x50.jpg"}
-                        songId={"P4H0mL2F"}
-                        type={"Song"}
-                        albumClickedCallBack={this.albumClickedCallBack}
-                        authorName={"Arijit Singh"}
-                        isRemovable={false}
-                        hasMoreOptions={true}
-                        searchTitle={"Kyu Hua"}
-                        playSongCallBack={this.playSongCallBack}
-                    />
-                    <RecentSearchList
-                        key={"P4H0mL2G"}
-                        imgId={"https://c.saavncdn.com/996/Titoo-Mba-Hindi-2018-20180517-50x50.jpg"}
-                        songId={"P4H0mL2F"}
-                        type={"Song"}
-                        albumClickedCallBack={this.albumClickedCallBack}
-                        authorName={"Arijit Singh"}
-                        isRemovable={false}
-                        hasMoreOptions={true}
-                        searchTitle={"Kyu Hua"}
-                        playSongCallBack={this.playSongCallBack}
-                    />
-                    <RecentSearchList
-                        key={"P4H0mL2H"}
-                        imgId={"https://c.saavncdn.com/996/Titoo-Mba-Hindi-2018-20180517-50x50.jpg"}
-                        songId={"P4H0mL2F"}
-                        type={"Song"}
-                        albumClickedCallBack={this.albumClickedCallBack}
-                        authorName={"Arijit Singh"}
-                        isRemovable={false}
-                        hasMoreOptions={true}
-                        searchTitle={"Kyu Hua"}
-                        playSongCallBack={this.playSongCallBack}
-                    />
+                    {
+                        this.state.lists.map(song => {
+                            return (
+                                <RecentSearchList
+                                    key={song.id}
+                                    imgId={song.image}
+                                    songId={song.id}
+                                    type={"song"}
+                                    albumClickedCallBack={this.albumClickedCallBack}
+                                    authorName={song.singers}
+                                    isRemovable={false}
+                                    hasMoreOptions={true}
+                                    searchTitle={song.song}
+                                    playSongCallBack={this.playSongCallBack}
+                                    playSongData={this.props.playSongData}
+                                />
+                            )
+                        })
+                    }
+
                 </div>
             </div>
         )
