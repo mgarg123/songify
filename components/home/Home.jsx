@@ -145,6 +145,7 @@ export class Home extends Component {
                                             playSongCallBack={this.playSongCallBack}
                                             songsQueueMain={this.state.songsQueue}
                                             albumData={this.state.albumData}
+                                            fromLibrary={false}
                                         /> :
                                         <MainSearch
                                             playSongCallBack={this.playSongCallBack}
@@ -155,7 +156,9 @@ export class Home extends Component {
                                     : this.state.whichTab === "library" ?
                                         <MainLib
                                             playSongCallBack={this.playSongCallBack}
-                                            playSongData={this.state.playSongData} /> :
+                                            playSongData={this.state.playSongData}
+                                            songQueueCallBack={this.songQueueCallBack}
+                                        /> :
                                         <MainAccount />
                         }
                         {

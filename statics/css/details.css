@@ -167,5 +167,42 @@
     cursor: pointer;
 }
 
+.addAllSong {
+    width: 100%;
+    padding: 15px 0px;
+    text-align: center;
+    position: relative;
+}
+
+.addAllSong button {
+    width: 200px;
+    height: 40px;
+    border-radius: 10px;
+    margin: 0 auto;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(11, 226, 226);
+}
+
+.add-all-icon {
+    width: 10%;
+}
+
+.addAllSong button span {
+    width: 80%;
+    font-size: 1.2em;
+    font-weight: 500;
+    padding: 0px 10px;
+}
+
+.addAllSong button:hover {
+    background: rgba(11, 226, 226, 0.3);
+    color: #fff;
+    transition: color 0.4s ease-in-out;
+}
+
 
 /* Album list CSS Ends / */

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import '../../statics/css/details.css'
 import { IconContext } from 'react-icons'
-import { AiFillHeart } from 'react-icons/ai'
+import { AiFillHeart, AiOutlinePlus } from 'react-icons/ai'
 import { FiPlay, FiArrowLeft } from 'react-icons/fi'
 import AlbumList from './AlbumList'
 
@@ -67,6 +67,10 @@ export class DetailsPage extends Component {
 
     playSongCallBack = (data) => {
         this.setState({ playSongData: data })
+    }
+
+    addAllSongsToLibrary = () => {
+
     }
 
     addToLib = () => {
@@ -196,6 +200,26 @@ export class DetailsPage extends Component {
                         }
 
                     </div>
+                    {
+                        this.props.fromLibrary &&
+                            this.props.albumData.songs.length < this.props.originalAlbumData.songs.length ?
+                            <div className="addAllSong">
+                                <button>
+                                    <IconContext.Provider value={{
+                                        className: 'add-all-icon',
+                                        size: '1.2em',
+                                    }}>
+                                        <AiOutlinePlus onClick={this.addAllSongsToLibrary} />
+                                    </IconContext.Provider>
+                                    <span>Add All Songs</span>
+
+                                </button>
+
+
+                            </div> :
+                            <></>
+                    }
+
                 </div>
             </div>
         )
