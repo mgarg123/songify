@@ -4,6 +4,7 @@ import { IconContext } from 'react-icons'
 import { AiFillHeart, AiOutlinePlus } from 'react-icons/ai'
 import { FiPlay, FiArrowLeft } from 'react-icons/fi'
 import AlbumList from './AlbumList'
+import addAllAlbumSongsToLib from '../../lib/musicLib/addAllAlbumSongsToLib'
 
 export class DetailsPage extends Component {
     constructor(props) {
@@ -15,7 +16,9 @@ export class DetailsPage extends Component {
             songsQueue: [],
             displayAdded: false,
             addedQuantity: 0,
-            isPresentInLib: false
+            isPresentInLib: false,
+            albumData: { songs: [] },
+            originalAlbumData: { songs: [] }
         }
     }
 
@@ -26,7 +29,9 @@ export class DetailsPage extends Component {
         let localLib = JSON.parse(localStorage.getItem("songify_library"))
         let isPresent = localLib ? localLib.find(x => x.albumid === this.props.albumData.albumid) !== undefined : false
         this.setState({
-            isPresentInLib: isPresent
+            isPresentInLib: isPresent,
+            albumData: this.props.albumData,
+            originalAlbumData: this.props.originalAlbumData
         })
     }
 
@@ -70,7 +75,8 @@ export class DetailsPage extends Component {
     }
 
     addAllSongsToLibrary = () => {
-
+        addAllAlbumSongsToLib(this.state.albumData.albumid, this.state.originalAlbumData.songs)
+        this.setState({ albumData: this.props.originalAlbumData })
     }
 
     addToLib = () => {
@@ -99,6 +105,12 @@ export class DetailsPage extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        if (this.props.albumData !== prevProps.albumData) {
+            this.setState({
+                albumData: this.props.albumData,
+                originalAlbumData: this.props.originalAlbumData
+            })
+        }
         if (this.state.isAlbumClicked !== prevState.isAlbumClicked)
             this.props.albumClickedCallBack(this.state.isAlbumClicked)
 
@@ -114,7 +126,7 @@ export class DetailsPage extends Component {
     render() {
         return (
             <div className="details-root"
-                style={{ height: `${this.props.albumData.songs.length < 3 ? '100vh' : 'auto'}` }}>
+                style={{ height: `${this.state.albumData.songs.length < 3 ? '100vh' : 'auto'}` }}>
 
                 <IconContext.Provider value={{
                     size: '2.5em',
@@ -184,7 +196,7 @@ export class DetailsPage extends Component {
                     </div>
                     <div className="album-song-list">
                         {
-                            this.props.albumData.songs.map((data, index) => {
+                            this.state.albumData.songs.map((data, index) => {
                                 return (
                                     <AlbumList key={data.id}
                                         songId={data.id}
@@ -202,14 +214,14 @@ export class DetailsPage extends Component {
                     </div>
                     {
                         this.props.fromLibrary &&
-                            this.props.albumData.songs.length < this.props.originalAlbumData.songs.length ?
+                            this.state.albumData.songs.length < this.state.originalAlbumData.songs.length ?
                             <div className="addAllSong">
-                                <button>
+                                <button onClick={this.addAllSongsToLibrary}>
                                     <IconContext.Provider value={{
                                         className: 'add-all-icon',
                                         size: '1.2em',
                                     }}>
-                                        <AiOutlinePlus onClick={this.addAllSongsToLibrary} />
+                                        <AiOutlinePlus />
                                     </IconContext.Provider>
                                     <span>Add All Songs</span>
 

@@ -5,6 +5,7 @@ import { IconContext } from "react-icons"
 import Menu from '../../menu/Menu'
 import getSongDetailsV2 from '../../../../lib/getSongDetailsV2'
 import getAlbumV2 from '../../../../lib/getAlbumV2'
+import getAllArtists from '../../../../lib/musicLib/getAllArtists'
 // import {CurrentPlayingCon} from '../../../context/currentPlayingContext'
 
 export class RecentSearchList extends Component {
@@ -66,6 +67,11 @@ export class RecentSearchList extends Component {
                     this.setState({ playSongData: data })
                 }
             }).catch(err => console.log(err.message))
+        } else if (this.props.type === "album" && this.props.subType === "artist") {
+            let songs = getAllArtists()
+            let artistData = songs.find(x => x.name === this.props.artistName)
+            this.setState({ albumData: artistData, isAlbumClicked: true })
+            return;
         } else if (this.props.type === "album") {
 
             getAlbumV2(this.props.songId).then(data => {

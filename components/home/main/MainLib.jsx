@@ -5,6 +5,7 @@ import LibOptions from './library/LibOptions'
 import { FiArrowLeft } from 'react-icons/fi'
 import { IconContext } from 'react-icons'
 import getAllSongs from '../../../lib/musicLib/getAllSongs'
+import getAllArtists from '../../../lib/musicLib/getAllArtists'
 import getAllAlbums from '../../../lib/musicLib/getAllAlbums'
 import DetailsPage from '../DetailsPage'
 
@@ -33,12 +34,15 @@ export class MainLib extends Component {
     componentDidMount() {
         let songs = getAllSongs()
         let albums = getAllAlbums()
+        let artists = getAllArtists()
         let count = {
             song: songs.length,
             album: albums.length,
-            artist: 0,
+            artist: artists.length,
             playlist: 0
         }
+
+
         this.setState({
             lists: songs,
             count: count
@@ -50,6 +54,12 @@ export class MainLib extends Component {
     }
 
     albumClickedCallBack = (albumData, originalAlbumData) => {
+        // if (this.state.whichOption === "Artists") {
+        //     let artists = getAllArtists()
+        //     let artistData = artists.find(x => x.name === albumData.name)
+        //     albumData = artistData
+        //     originalAlbumData = artistData
+        // }
         this.setState({
             albumData: albumData,
             isAlbumClicked: true,
@@ -64,6 +74,9 @@ export class MainLib extends Component {
         } else if (option === 'Songs') {
             let songs = getAllSongs()
             this.setState({ lists: songs })
+        } else if (option === "Artists") {
+            let artists = getAllArtists()
+            this.setState({ lists: artists })
         }
         this.setState({
             whichOption: option,
@@ -89,6 +102,7 @@ export class MainLib extends Component {
 
         if (this.state.songsQueue !== prevState.songsQueue)
             this.props.songQueueCallBack(this.state.songsQueue)
+
     }
 
     render() {
@@ -152,7 +166,12 @@ export class MainLib extends Component {
                                         albumClickedCallBack={this.albumClickedCallBack}
                                     /> :
                                     this.state.whichOption === "Artists" ?
-                                        <LibDetails type={"Artist"} /> :
+                                        <LibDetails type={"Artist"}
+                                            lists={this.state.lists}
+                                            type={"Album"}
+                                            subType={"Artist"}
+                                            albumClickedCallBack={this.albumClickedCallBack}
+                                        /> :
                                         <LibDetails type={"Playlist"} /> :
                             <></>
 

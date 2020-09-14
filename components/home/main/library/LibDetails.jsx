@@ -27,6 +27,9 @@ export class LibDetails extends Component {
 
     albumClickedCallBack = (albumData) => {
         let localAlbumData = getSongsForAlbum(albumData.albumid)
+        if (albumData.subType && albumData.subType === "artist") {
+            localAlbumData = albumData
+        }
         this.setState({ albumData: localAlbumData, originalAlbumData: albumData })
     }
 
@@ -79,12 +82,14 @@ export class LibDetails extends Component {
                         this.state.lists.map(song => {
                             return (
                                 <RecentSearchList
-                                    key={song.id}
+                                    key={song.id ? song.id : song.albumid}
                                     imgId={song.image}
-                                    songId={song.id}
+                                    songId={song.id ? song.id : song.albumid}
                                     type={this.props.type.toLowerCase()}
+                                    subType={this.props.subType !== undefined && this.props.subType.toLowerCase()}
                                     albumClickedCallBack={this.albumClickedCallBack}
                                     authorName={this.props.type === "Song" ? song.singers : song.primary_artists}
+                                    artistName={song.name}
                                     isRemovable={false}
                                     hasMoreOptions={true}
                                     searchTitle={this.props.type === "Song" ? song.song : song.title}
