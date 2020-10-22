@@ -70,7 +70,7 @@ export class LibDetails extends Component {
                         style: {
                             position: 'absolute',
                             top: '4px',
-                            left: '7px',
+                            left: `${screen.width >= 767 ? '17px' : '7px'}`,
                         }
                     }}>
                         <GrFormSearch />

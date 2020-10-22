@@ -35,10 +35,11 @@ export class MainLib extends Component {
         let songs = getAllSongs()
         let albums = getAllAlbums()
         let artists = getAllArtists()
+        // let playlists = getAllPlaylists()
         let count = {
-            song: songs.length,
-            album: albums.length,
-            artist: artists.length,
+            song: songs !== undefined && songs.length,
+            album: albums !== undefined && albums.length,
+            artist: artists !== undefined && artists.length,
             playlist: 0
         }
 
@@ -76,7 +77,10 @@ export class MainLib extends Component {
             this.setState({ lists: songs })
         } else if (option === "Artists") {
             let artists = getAllArtists()
-            this.setState({ lists: artists })
+            this.setState({ lists: artists !== undefined ? artists : [] })
+        } else {
+            // let playlists = getAllPlaylists()
+            this.setState({ lists: [] })
         }
         this.setState({
             whichOption: option,
@@ -172,7 +176,12 @@ export class MainLib extends Component {
                                             subType={"Artist"}
                                             albumClickedCallBack={this.albumClickedCallBack}
                                         /> :
-                                        <LibDetails type={"Playlist"} /> :
+                                        <LibDetails type={"Playlist"}
+                                            lists={this.state.lists}
+                                            type={"Album"}
+                                            subType={"Playlists"}
+                                            albumClickedCallBack={this.albumClickedCallBack}
+                                        /> :
                             <></>
 
 
