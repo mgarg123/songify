@@ -27,6 +27,7 @@ module.exports = withPWA(withCSS(withImg({
     },
     pwa: {
         dest: 'public',
+        skipWaiting: true,
         runtimeCaching,
     },
     webpack5:false
