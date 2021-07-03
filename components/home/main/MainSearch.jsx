@@ -5,6 +5,7 @@ import SearchResult from './search/SearchResult'
 import '../../../statics/css/search.css'
 import axios from 'axios'
 import fetchSearchResultV2 from '../../../lib/fetchSearchResultV2'
+import fetchSearchResult from '../../../lib/fetchSearchResult'
 
 export class MainSearch extends Component {
     constructor(props) {
@@ -38,7 +39,8 @@ export class MainSearch extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (this.state.searchValue !== prevState.searchValue && this.state.searchValue !== "") {
 
-            fetchSearchResultV2(this.state.searchValue).then(resp => {
+            fetchSearchResult(this.state.searchValue).then(resp => {
+                console.log(resp)
                 this.setState({ searchResult: resp, loading: false })
             }).catch(err => console.log(err.message));
 
