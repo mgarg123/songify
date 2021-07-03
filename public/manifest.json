@@ -1,7 +1,7 @@
 {
   "theme_color": "#8ed2f3",
-  "background_color": "#f8d3ad",
-  "display": "fullscreen",
+  "background_color": "#2fbda3",
+  "display": "standalone",
   "scope": "/",
   "start_url": "/",
   "name": "songify",
