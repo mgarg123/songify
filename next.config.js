@@ -1,7 +1,10 @@
 const withCSS = require('@zeit/next-css')
 const withImg = require('next-images')
+const withPWA = require('next-pwa')
+const runtimeCaching = require('next-pwa/cache')
+
 //Creating ENV
-module.exports = withCSS(withImg({
+module.exports = withPWA(withCSS(withImg({
     env: {
         img: "http://jioimages.cdn.jio.com/hdindiamusic/images/", //Pass the Image ID
         single_song_details: "http://beatsapi.media.jio.com/v2_1/beats-api/jio/src/response/songdetails/", //Pass Song ID
@@ -22,5 +25,9 @@ module.exports = withCSS(withImg({
         lyrics_base_url : "https://www.jiosaavn.com/api.php?__call=lyrics.getLyrics&ctx=web6dot0&api_version=4&_format=json&_marker=0%3F_marker%3D0&lyrics_id="
 
     },
+    pwa: {
+        dest: 'public',
+        runtimeCaching,
+    },
     webpack5:false
-}))
+})))
