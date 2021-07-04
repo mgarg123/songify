@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react'
+import {Helmet} from 'react-helmet'
 import '../../statics/css/player.css'
 import { FaPlay, FaPause } from 'react-icons/fa'
 import { MdClose } from 'react-icons/md'
@@ -53,6 +54,7 @@ export class Player extends Component {
 
         let duration = this.props.playSongData.duration + ""
         let totalTime = durationToTime(duration)
+        
 
         this.setState({ totalDurationInTime: totalTime })
         if (this.audioRef.current) {
@@ -79,8 +81,9 @@ export class Player extends Component {
     audioError = (event) => {
 
         if (this.audioRef.current.src.match("m3u8") !== null) {
-            let url = this.props.playSongData.media_preview_url
-            url = url.replace("_320", "_64")
+            // let url = this.props.playSongData.media_preview_url
+            // url = url.replace("_320", "_64")
+            url = this.props.playSongData.play_url
             this.audioRef.current.src = url
             this.audioRef.current.play().catch(() => console.log("Error in URL"));
         } else {
@@ -104,7 +107,7 @@ export class Player extends Component {
                             this.audioRef.current.play().catch(() => console.log("Error in URL"));
                         }
 
-                    }, 6000);
+                    }, 7000);
                     if (this.audioRef.current !== null && this.audioRef.current.src.match('m3u8') !== null) {
                         if (Hls.isSupported) {
                             let hls = new Hls();
@@ -233,6 +236,13 @@ export class Player extends Component {
 
         return (
             <Fragment>
+                 <Helmet>
+                    <title>Songify - {this.props.playSongData.song} - {this.props.playSongData.singers}</title>
+                    <meta name="description" content={this.props.playSongData.song+"<->"+
+                        this.props.playSongData.singers+"<->"+this.props.playSongData.language+"<->"+
+                        this.props.playSongData.label+"<->"+this.props.playSongData.year} />
+                    <meta name="keywords" content="latest song, latest bollywood song, latest songs of arijit singh, hindi songs, best hollywood songs, english songs" />
+                </Helmet>
 
                 <MediaSession
                     title={this.props.playSongData.song}
@@ -492,7 +502,7 @@ export class Player extends Component {
                                                                 ref={this.audioRef}
                                                                 autoPlay="autoplay"
                                                                 preload="metadata"
-                                                                src={this.props.playSongData.media_preview_url}
+                                                                src={this.props.playSongData.play_url}
                                                                 onPlay={() => this.setState({ isPlaying: true })}
                                                                 onPause={() => this.setState({ isPlaying: false })}
                                                                 onError={this.audioError}

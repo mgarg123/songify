@@ -9,10 +9,9 @@ const cors = initMiddleware(
 )
 
 
-
 async function handler(req, res) {
     await cors(req, res)
-    const resp = await fetch(process.env.single_song_detailsV2 + "" + req.query.id)
+    const resp = await fetch(process.env.song_details + "" + req.query.id)
     const data = await resp.json()
         // data[req.query.id]['media_url1'] = des_decrypt(data[req.query.id]['encrypted_media_url'])
     data[req.query.id]['song'] = unescape(data[req.query.id]['song']).replace('&#039;', "'")

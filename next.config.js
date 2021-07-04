@@ -7,6 +7,7 @@ const runtimeCaching = require('next-pwa/cache')
 module.exports = withPWA(withCSS(withImg({
     env: {
         img: "http://jioimages.cdn.jio.com/hdindiamusic/images/", //Pass the Image ID
+        song_details:'https://songify-api.herokuapp.com/decode/', //Pass song ID (New API)
         single_song_details: "http://beatsapi.media.jio.com/v2_1/beats-api/jio/src/response/songdetails/", //Pass Song ID
         play_song_prefix: "http://jiobeats.cdn.jio.com/mod/_definst_/mp4:hdindiamusic/audiofiles/", //ex:- 717/716180/717_716180_1_{bitrate}.mp4/play_song_suffix  
         play_song_suffix: "/playlist.m3u8",
