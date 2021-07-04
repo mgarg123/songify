@@ -4,10 +4,12 @@ import LibDetails from './library/LibDetails'
 import LibOptions from './library/LibOptions'
 import { FiArrowLeft } from 'react-icons/fi'
 import { IconContext } from 'react-icons'
+import { MdShuffle } from 'react-icons/md'
 import getAllSongs from '../../../lib/musicLib/getAllSongs'
 import getAllArtists from '../../../lib/musicLib/getAllArtists'
 import getAllAlbums from '../../../lib/musicLib/getAllAlbums'
 import DetailsPage from '../DetailsPage'
+import { shuffle,sortBy } from 'lodash'
 
 export class MainLib extends Component {
     constructor(props) {
@@ -49,6 +51,29 @@ export class MainLib extends Component {
             count: count
         })
     }
+
+    shuffleFromLibrary = () => {
+        let songs = getAllSongs()
+        let shuffledSongs = shuffle(songs)
+        this.setState({
+            songsQueue:shuffledSongs
+        })
+    }
+
+    //sort event
+    sortItems = (event) => {
+        let currentList = this.state.lists
+        let sortedList = sortBy(currentList,(obj) => 
+        {
+            if(obj.title!==undefined)
+                return obj.title 
+            else
+                return obj.song
+        }
+        )
+        this.setState({lists:sortedList})
+    }
+
 
     playSongCallBack = (data) => {
         this.setState({ playSongData: data })
@@ -145,14 +170,37 @@ export class MainLib extends Component {
                                 width: '20%',
                                 color: 'rgb(11,226,226)',
                                 textAlign: 'center',
+                                cursor: 'pointer',
                                 display: `${this.state.showDetailsPage ? 'inline-block' : 'none'}`
-                            }}>Sort</span>
+                            }}
+                            onClick={this.sortItems}
+                            >Sort</span>
                         </div>
                     }
                     {
                         !this.state.showDetailsPage && !this.state.isAlbumClicked &&
                         <LibOptions count={this.state.count} whichOptionCallBack={this.whichOptionCallBack} />
                     }
+
+                    {
+                        !this.state.showDetailsPage && 
+                        <div className="shuffleAll-lib">
+                        <button onClick={this.shuffleFromLibrary}>
+                            <IconContext.Provider value={{
+                                size: '1.5em',
+                                color: "#fff",
+                                style: {
+                                    float: "left",
+                                    textAlign:"left"
+                                }
+                            }}>
+                                <MdShuffle />
+                            </IconContext.Provider>
+                            <span style={{ float: "right" }}>Shuffle All</span></button>
+
+                    </div>
+                    }
+                   
 
                     {
                         this.state.showDetailsPage ?

@@ -66,6 +66,33 @@
     color: #757575;
 }
 
+/* Lib Shuffle CSS  */
+
+.shuffleAll-lib {
+    height: 120px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.shuffleAll-lib button {
+    width: 200px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 0 auto;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(11, 226, 226);
+}
+
+
+/* Lib Shuffle CSS Ends  */
 
 /* LIB details CSS starts  */
 

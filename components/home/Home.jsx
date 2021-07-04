@@ -42,7 +42,7 @@ export class Home extends Component {
     }
 
     songQueueCallBack = (queue) => {
-        this.setState({ songsQueue: queue })
+        this.setState({ songsQueue: queue,playSongData: queue[0] })
     }
 
     albumClickedCallBack = (albumData) => {
