@@ -10,30 +10,10 @@ const cors = initMiddleware(
 async function handler(req, res) {
     await cors(req, res)
     const id = req.query.id
-    const count = req.query.count ? parseInt(req.query.count) : -1
-    const resp = await fetch(process.env.playlists + "" + req.query.id)
+    
+    const resp = await fetch(process.env.playlist_details_base_url + "" + req.query.id)
     const data = await resp.json()
 
-    const listOfSongs = data.result.data.list
-    const newListOfSongs = {
-        header: data.result.data.header,
-        count: count,
-        list: []
-    }
-    if (count === -1) {
-        data.result.data.count = listOfSongs.length
-        res.send(data)
-    } else {
-        let cnt = 0;
-        for (let i in listOfSongs) {
-            if (cnt == count)
-                break;
-
-            newListOfSongs.list.push(listOfSongs[i])
-            cnt++;
-        }
-        res.send(newListOfSongs)
-    }
 
 
     res.send(data)

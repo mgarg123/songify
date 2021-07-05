@@ -10,6 +10,7 @@ import getAllArtists from '../../../lib/musicLib/getAllArtists'
 import getAllAlbums from '../../../lib/musicLib/getAllAlbums'
 import DetailsPage from '../DetailsPage'
 import { shuffle,sortBy } from 'lodash'
+import getAllPlaylists from '../../../lib/musicLib/getAllPlaylists'
 
 export class MainLib extends Component {
     constructor(props) {
@@ -37,15 +38,17 @@ export class MainLib extends Component {
         let songs = getAllSongs()
         let albums = getAllAlbums()
         let artists = getAllArtists()
+        let playlists = getAllPlaylists()
         // let playlists = getAllPlaylists()
         let count = {
             song: songs !== undefined && songs.length,
             album: albums !== undefined && albums.length,
             artist: artists !== undefined && artists.length,
-            playlist: 0
+            playlist: playlists!==undefined && playlists.length
         }
 
-
+        // console.log(playlists)
+    
         this.setState({
             lists: songs,
             count: count
@@ -104,8 +107,8 @@ export class MainLib extends Component {
             let artists = getAllArtists()
             this.setState({ lists: artists !== undefined ? artists : [] })
         } else {
-            // let playlists = getAllPlaylists()
-            this.setState({ lists: [] })
+            let playlists = getAllPlaylists()
+            this.setState({ lists: playlists !== undefined ? playlists : [] })
         }
         this.setState({
             whichOption: option,
@@ -183,7 +186,7 @@ export class MainLib extends Component {
                     }
 
                     {
-                        !this.state.showDetailsPage && 
+                        !this.state.showDetailsPage && !this.state.isAlbumClicked &&
                         <div className="shuffleAll-lib">
                         <button onClick={this.shuffleFromLibrary}>
                             <IconContext.Provider value={{

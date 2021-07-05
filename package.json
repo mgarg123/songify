@@ -21,6 +21,7 @@
     "next-pwa": "^5.2.22",
     "next-redux-wrapper": "^6.0.2",
     "react": "16.13.1",
+    "react-beforeunload": "^2.5.1",
     "react-dom": "16.13.1",
     "react-helmet": "^6.1.0",
     "react-icons": "^3.11.0",

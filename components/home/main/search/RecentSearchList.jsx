@@ -6,6 +6,8 @@ import Menu from '../../menu/Menu'
 import getSongDetailsV2 from '../../../../lib/getSongDetailsV2'
 import getAlbumV2 from '../../../../lib/getAlbumV2'
 import getAllArtists from '../../../../lib/musicLib/getAllArtists'
+import getPlaylist from '../../../../lib/getPlaylist'
+import getAllPlaylists from '../../../../lib/musicLib/getAllPlaylists'
 // import {CurrentPlayingCon} from '../../../context/currentPlayingContext'
 
 export class RecentSearchList extends Component {
@@ -23,6 +25,8 @@ export class RecentSearchList extends Component {
 
     clickHandle = (type) => {
         let history = localStorage.getItem('songify_search_history')
+
+        // console.log(this.props.songId+" - "+this.props.type+" - "+this.props.subType)
 
         let checkFirst = JSON.parse(history)
         if (checkFirst.length === 0 || checkFirst.find(x => x.id === this.props.songId) === undefined) {
@@ -47,6 +51,10 @@ export class RecentSearchList extends Component {
 
         if (this.props.type !== undefined && this.props.type === "song") {
 
+            // if(this.props.type !== undefined && this.props.type === "playlist"){
+
+            // }
+            // console.log("Inside RSL song")
             getSongDetailsV2(this.props.songId).then(data => {
                 let mediaURL = data.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
                 data.media_preview_url = mediaURL
@@ -68,14 +76,24 @@ export class RecentSearchList extends Component {
                 }
             }).catch(err => console.log(err.message))
         } else if (this.props.type === "album" && this.props.subType === "artist") {
+            // console.log("Inside RSL artist")
             let songs = getAllArtists()
             let artistData = songs.find(x => x.name === this.props.artistName)
             this.setState({ albumData: artistData, isAlbumClicked: true })
             return;
-        } else if (this.props.type === "album") {
-
+        }else if (this.props.subType === "playlists" && this.props.type === "album") {
+            // console.log("Inside RSL playlist")
+            let songs = getAllPlaylists()
+            let playlistData = songs.find(x => x.title === this.props.playlistName)
+            this.setState({ albumData: playlistData, isAlbumClicked: true })
+            // console.log(playlistData)
+            return;
+        }
+         else if (this.props.type === "album") {
+            // console.log("Inside RSL album main")
             getAlbumV2(this.props.songId).then(data => {
                 if (type === "play") {
+                    console.log('--Album Play-----')
                     let songToPlay = data.songs[0]
                     let songsQueue = datat.songs.length > 1 && data.songs.map((x, index) => index > 0 && x)
                     songToPlay.media_preview_url = songToPlay.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
@@ -92,12 +110,33 @@ export class RecentSearchList extends Component {
                 }
             }).catch(err => console.log(err.message));
 
+        }else if (this.props.type === "playlist") {
+            // console.log("Inside RSL playlist1")
+            getPlaylist(this.props.songId).then(data => {
+                data.title = data.listname
+                data.primary_artists = "Various"
+                data.albumid=-1
+                data.year = "Mix"
+                if (type === "play") {
+                    console.log('--Playlist Play-----')
+                    let songToPlay = data.songs[0]
+                    let songsQueue = datat.songs.length > 1 && data.songs.map((x, index) => index > 0 && x)
+                    songToPlay.media_preview_url = songToPlay.media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
+                    // console.log(songToPlay);
+                    if (data.songs.length > 1) {
+                        this.props.playSongCallBack(songToPlay, songsQueue)
+                    } else {
+                        this.props.playSongCallBack(songToPlay)
+                    }
 
-
-
-
+                    // this.setState({ playSongData: songToPlay })
+                } else {
+                    this.setState({ albumData: data, isAlbumClicked: true })
+                }
+            }).catch(err => console.log(err.message));
 
         }
+
     }
 
 
@@ -144,7 +183,7 @@ export class RecentSearchList extends Component {
                             onClick={this.clickHandle}
                             style={{ color: `${this.props.playSongData && this.props.playSongData.id === this.props.songId ? 'rgb(11, 226, 226)' : '#fff'}` }}
                             dangerouslySetInnerHTML={{
-                                __html: `${this.props.searchTitle.length > 28 ?
+                                __html: `${this.props.searchTitle && this.props.searchTitle.length > 28 ?
                                     this.props.searchTitle.substr(0, 26) + "..." :
                                     this.props.searchTitle}`
                             }}

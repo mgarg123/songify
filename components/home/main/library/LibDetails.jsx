@@ -3,6 +3,7 @@ import RecentSearchList from '../search/RecentSearchList'
 import { IconContext } from 'react-icons'
 import { GrFormSearch } from 'react-icons/gr'
 import getSongsForAlbum from '../../../../lib/musicLib/getSongsForAlbum'
+import getSongsForPlaylist from '../../../../lib/musicLib/getSongsForPlaylist'
 
 export class LibDetails extends Component {
     constructor(props) {
@@ -18,6 +19,7 @@ export class LibDetails extends Component {
     }
 
     componentDidMount() {
+        // console.log(this.props.lists)
         this.setState({ lists: this.props.lists })
     }
 
@@ -26,10 +28,24 @@ export class LibDetails extends Component {
     }
 
     albumClickedCallBack = (albumData) => {
-        let localAlbumData = getSongsForAlbum(albumData.albumid)
+        let localAlbumData = []
+        // console.log("LibDetails: ")
+        // console.log(albumData)
+        if(albumData.type==='playlist'){
+            localAlbumData = getSongsForPlaylist(albumData.id)
+            albumData = localAlbumData
+        }else{
+            localAlbumData = getSongsForAlbum(albumData.albumid)
+        }
+
+        // console.log(localAlbumData)
+        // console.log(albumData)
         if (albumData.subType && albumData.subType === "artist") {
             localAlbumData = albumData
         }
+        // if (albumData.subType && albumData.subType === "playlist") {
+        //     localAlbumData = albumData
+        // }
         this.setState({ albumData: localAlbumData, originalAlbumData: albumData })
     }
 
@@ -41,6 +57,14 @@ export class LibDetails extends Component {
         if (this.state.searchVal !== prevState.searchVal) {
             if (this.props.type === "Song") {
                 let newList = this.props.lists.filter(x => x.song.toLowerCase().includes(this.state.searchVal.toLowerCase()))
+                this.setState({ lists: newList })
+            }
+            if (this.props.subType===undefined && this.props.type === "Album") {
+                let newList = this.props.lists.filter(x => x.title.toLowerCase().includes(this.state.searchVal.toLowerCase()))
+                this.setState({ lists: newList })
+            }
+            if (this.props.subType === "Playlists") {
+                let newList = this.props.lists.filter(x => x.title.toLowerCase().includes(this.state.searchVal.toLowerCase()))
                 this.setState({ lists: newList })
             }
         }
@@ -60,7 +84,7 @@ export class LibDetails extends Component {
                     <input type="text"
                         id="lib-search-bar"
                         value={this.state.searchVal}
-                        placeholder={`Search ${this.props.type}`}
+                        placeholder={`Search ${this.props.subType?this.props.subType:this.props.type}`}
                         autoComplete="off"
                         onChange={(event) => this.setState({ searchVal: event.target.value })}
                     />
@@ -90,6 +114,7 @@ export class LibDetails extends Component {
                                     albumClickedCallBack={this.albumClickedCallBack}
                                     authorName={this.props.type === "Song" ? song.singers : song.primary_artists}
                                     artistName={song.name}
+                                    playlistName={song.title?song.title:song.listname}
                                     isRemovable={false}
                                     hasMoreOptions={true}
                                     searchTitle={this.props.type === "Song" ? song.song : song.title}

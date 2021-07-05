@@ -4,7 +4,9 @@ import { IconContext } from 'react-icons'
 import { AiFillHeart, AiOutlinePlus } from 'react-icons/ai'
 import { FiPlay, FiArrowLeft } from 'react-icons/fi'
 import AlbumList from './AlbumList'
+import axios from 'axios'
 import addAllAlbumSongsToLib from '../../lib/musicLib/addAllAlbumSongsToLib'
+import getSongDetailsV2 from '../../lib/getSongDetailsV2'
 
 export class DetailsPage extends Component {
     constructor(props) {
@@ -27,21 +29,36 @@ export class DetailsPage extends Component {
         window.scrollTo(0, 0)
 
         let localLib = JSON.parse(localStorage.getItem("songify_library"))
-        let isPresent = localLib ? localLib.find(x => x.albumid === this.props.albumData.albumid) !== undefined : false
+        let isPresent = false
+        if(localLib){
+            if(this.props.albumData.type!==undefined && this.props.albumData.type==='playlist'){
+                isPresent = localLib.find(x => x.listid === this.props.albumData.listid) !== undefined
+            }else{
+                isPresent = localLib.find(x => x.albumid === this.props.albumData.albumid) !== undefined
+            }
+        }
+        
         this.setState({
             isPresentInLib: isPresent,
             albumData: this.props.albumData,
             originalAlbumData: this.props.originalAlbumData
         })
+        // console.log('-------------------------')
+        // console.log(this.state.albumData)
+        // console.log(this.state.originalAlbumData)
     }
 
     addAllSongsToQueue = () => {
         let songsToAdd = this.props.albumData.songs
-        for (let i in songsToAdd) {
-            let mediaURL = songsToAdd[i].media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
-            songsToAdd[i].media_preview_url = mediaURL
-        }
-        let playCurrentFromQueue = songsToAdd[0]
+        // for (let i in songsToAdd) {
+        //     let mediaURL = songsToAdd[i].media_preview_url.replace("preview", "h").replace("_96_p.mp4", "_320.mp3")
+        //     songsToAdd[i].media_preview_url = mediaURL
+        // }
+        let playCurrentFromQueue = ''
+        getSongDetailsV2('/api/songDetailsV2?id='+data[0].id).then(res => {
+            data = res 
+            playCurrentFromQueue = data 
+        }).catch(err => console.log(err.message))
         this.setState({
             songsQueue: songsToAdd,
             playSongData: playCurrentFromQueue,
@@ -83,13 +100,27 @@ export class DetailsPage extends Component {
         let localLib = JSON.parse(localStorage.getItem("songify_library"))
         let isAdded = false
 
+        // console.log(this.props.albumData)
+
+
         if (localLib) {
-            let isPresent = localLib.find(x => x.albumid === this.props.albumData.albumid) !== undefined
+            let isPresent=false;
+            if(this.props.albumData.type!==undefined && this.props.albumData.type==='playlist'){
+                isPresent = localLib.find(x => x.listid === this.props.albumData.listid) !== undefined
+            }else{
+                isPresent = localLib.find(x => x.albumid === this.props.albumData.albumid) !== undefined
+            }
+            
             if (!isPresent) {
                 localLib.push(this.props.albumData)
                 isAdded = true
             } else {
-                localLib = localLib.filter(x => x.albumid !== this.props.albumData.albumid)
+                if(this.props.albumData.type!==undefined && this.props.albumData.type==='playlist'){
+                    localLib = localLib.filter(x => x.listid !== this.props.albumData.listid)
+                }else{
+                    localLib = localLib.filter(x => x.albumid !== this.props.albumData.albumid)
+                }
+                
                 isAdded = false
             }
         } else {
@@ -212,8 +243,8 @@ export class DetailsPage extends Component {
                         }
 
                     </div>
-                    {
-                        this.props.fromLibrary &&
+                    {   
+                        this.props.fromLibrary && 
                             this.state.albumData.songs.length < this.state.originalAlbumData.songs.length ?
                             <div className="addAllSong">
                                 <button onClick={this.addAllSongsToLibrary}>

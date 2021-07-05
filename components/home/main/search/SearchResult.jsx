@@ -114,6 +114,31 @@ export class SearchResult extends Component {
                         }
                     </div>
                 </div>
+                <div className="suggestions">
+                    <div className="sugg-top">
+                        <h2>Playlists</h2>
+                    </div>
+
+                    <div className="search-suggestion-list">
+                        {
+                            this.props.result.playlists.data.map(data => {
+                                return (
+                                    <RecentSearchList
+                                        key={data.id}
+                                        imgId={data.image}
+                                        songId={data.id}
+                                        type={data.type}
+                                        albumClickedCallBack={this.albumClickedCallBack}
+                                        authorName={data.type === "song" ? data.more_info.singers :
+                                            data.type === "album" ? data.music : data.type}
+                                        isRemovable={false}
+                                        hasMoreOptions={true}
+                                        searchTitle={data.title} />
+                                )
+                            })
+                        }
+                    </div>
+                </div>
             </div>
         )
     }

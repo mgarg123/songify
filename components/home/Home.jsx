@@ -12,6 +12,7 @@ import '../../statics/css/index.css'
 import { Provider } from 'react-redux'
 import store from '../redux/store'
 import { CurrentPlayingProvider } from '../context/currentPlayingContext'
+import { Beforeunload } from 'react-beforeunload'
 
 
 
@@ -132,6 +133,7 @@ export class Home extends Component {
     render() {
         return (
             <Fragment>
+                <Beforeunload onBeforeunload={() => 'Leaving this site?'} />
                 <Provider store={store}>
                     <CurrentPlayingProvider playSongData={this.state.playSongData}>
                         <Header visible={this.state.whichTab === "search" || this.state.whichTab === "library" ? false : true} />
